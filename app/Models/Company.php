@@ -24,4 +24,9 @@ class Company extends Model
     {
          return $this->hasMany(Media::class);
     }
+
+    public function currency(): BelongsTo
+    {
+         return $this->belongsTo(Currency::class);
+    }
 }
