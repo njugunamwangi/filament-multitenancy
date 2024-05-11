@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Tenancy\RegisterCompany;
+use App\Models\Company;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -28,6 +30,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->domain(env('APP_SUBDOMAIN'))
             ->login()
+            ->registration()
             ->colors([
                 'primary' => Color::Teal,
             ])
@@ -38,6 +41,8 @@ class AppPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
+            ->tenant(Company::class)
+            ->tenantRegistration(RegisterCompany::class)
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,

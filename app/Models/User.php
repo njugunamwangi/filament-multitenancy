@@ -4,17 +4,23 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasFactory;
     use Notifiable;
     use HasRoles;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -61,5 +67,20 @@ class User extends Authenticatable implements FilamentUser
             return true;
 
          }
+    }
+
+    public function companies(): HasMany
+    {
+         return $this->hasMany(Company::class);
+    }
+
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->companies;
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->companies()->whereKey($tenant)->exists();
     }
 }
