@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca4d9232491c2ce220fef84557149b20",
+    "content-hash": "82ef9c2ccd4b884c20f31ccc6096f8a4",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -68,6 +68,70 @@
                 "source": "https://github.com/Althinect/filament-spatie-roles-permissions/tree/v2.2.26"
             },
             "time": "2024-05-06T07:09:09+00:00"
+        },
+        {
+            "name": "andrewdwallo/filament-selectify",
+            "version": "v2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/andrewdwallo/filament-selectify.git",
+                "reference": "8d83fdc9c06f14a04060076ed9d809e6363abfc4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/andrewdwallo/filament-selectify/zipball/8d83fdc9c06f14a04060076ed9d809e6363abfc4",
+                "reference": "8d83fdc9c06f14a04060076ed9d809e6363abfc4",
+                "shasum": ""
+            },
+            "require": {
+                "filament/forms": "^3.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Wallo\\FilamentSelectify\\FilamentSelectifyServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wallo\\FilamentSelectify\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Wallo",
+                    "email": "andrewdwallo@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package filament-selectify",
+            "homepage": "https://github.com/andrewdwallo/filament-selectify",
+            "keywords": [
+                "andrewdwallo",
+                "filament-selectify",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/andrewdwallo/filament-selectify/issues",
+                "source": "https://github.com/andrewdwallo/filament-selectify/tree/v2.0.7"
+            },
+            "time": "2024-02-26T03:11:42+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",

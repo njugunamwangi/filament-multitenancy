@@ -6,6 +6,7 @@ export default {
         './app/Filament/Clusters/Settings/**/*.php',
         './resources/views/filament/clusters/settings/**/*.blade.php',
         './vendor/awcodes/filament-curator/resources/**/*.blade.php',
+        './vendor/andrewdwallo/filament-selectify/resources/views/**/*.blade.php',
         './vendor/filament/**/*.blade.php',
     ],
 }
