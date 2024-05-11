@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminSeeder::class,
             CurrencySeeder::class,
+            OwnerSeeder::class,
+            CompanySeeder::class,
+            CustomerSeeder::class,
+            LeadSeeder::class,
         ]);
     }
 }
