@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Lead;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,8 @@ class CustomerFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
-            'description' => fake()->paragraph()
+            'description' => fake()->paragraph(),
+            'Lead_id' => fake()->randomElement(Lead::all()->pluck('id')),
         ];
     }
 }
