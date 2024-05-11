@@ -18,4 +18,9 @@ class Customer extends Model
     {
          return $this->belongsTo(Company::class);
     }
+
+    public function lead(): BelongsTo
+    {
+         return $this->belongsTo(Lead::class);
+    }
 }
