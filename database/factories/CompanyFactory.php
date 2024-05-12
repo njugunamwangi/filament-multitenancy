@@ -25,7 +25,7 @@ class CompanyFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'currency_id' => fake()->randomElement(Currency::all()->pluck('id')),
             'user_id' => fake()->randomElement(User::all()->pluck('id')),
-            'entity_type' => fake()->randomElement(EntityType::cases())->value
+            'entity_type' => fake()->randomElement(EntityType::cases())->value,
         ];
     }
 }

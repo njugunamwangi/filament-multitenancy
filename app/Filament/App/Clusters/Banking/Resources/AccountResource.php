@@ -6,7 +6,6 @@ use App\Enums\AccountStatus;
 use App\Enums\AccountType;
 use App\Filament\App\Clusters\Banking;
 use App\Filament\App\Clusters\Banking\Resources\AccountResource\Pages;
-use App\Filament\App\Clusters\Banking\Resources\AccountResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Currency;
 use Filament\Forms;
@@ -36,113 +35,113 @@ class AccountResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Group::make()
-                ->schema([
-                    Section::make('Account Information')
-                        ->schema([
-                            Grid::make(2)
-                                ->schema([
-                                    Forms\Components\Select::make('type')
-                                        ->enum(AccountType::class)
-                                        ->options(AccountType::class)
-                                        ->required()
-                                        ->searchable()
-                                        ->preload()
-                                        ->default(AccountType::DEFAULT),
-                                    Forms\Components\TextInput::make('name')
-                                        ->required()
-                                        ->maxLength(100),
-                                ]),
-                            Grid::make(2)
-                                ->schema([
-                                    Forms\Components\TextInput::make('number')
-                                        ->required()
-                                        ->maxLength(20),
-                                    ToggleButton::make('enabled')
-                                        ->label('Default')
-                                        ->offColor('danger')
-                                        ->onColor('info')
-                                        ->offLabel('No')
-                                        ->onLabel('Yes')
-                                        ->required(),
-                                ]),
-                        ]),
-                    Section::make('Currency & Status')
-                        ->schema([
-                            Grid::make(2)
-                                ->schema([
-                                    Forms\Components\Select::make('currency_id')
-                                        ->relationship('currency', 'abbr')
-                                        ->label('Currency')
-                                        ->optionsLimit(40)
-                                        ->searchable()
-                                        ->live()
-                                        ->preload()
-                                        ->getSearchResultsUsing(fn (string $search): array => Currency::whereAny([
-                                            'name', 'abbr', 'symbol', 'code'], 'like', "%{$search}%")->limit(50)->pluck('abbr', 'id')->toArray())
-                                        ->getOptionLabelUsing(fn ($value): ?string => Currency::find($value)?->abbr)
-                                        ->loadingMessage('Loading currencies...')
-                                        ->searchPrompt('Search currencies by their symbol, abbreviation or country')
-                                        ->required(),
-                                    Forms\Components\Select::make('status')
-                                        ->required()
-                                        ->enum(AccountStatus::class)
-                                        ->options(AccountStatus::class)
-                                        ->searchable()
-                                        ->preload()
-                                        ->default(AccountStatus::DEFAULT),
-                                ]),
-                        ]),
-                    Tabs::make('Account Specifications')
-                        ->tabs([
-                            Tabs\Tab::make('Bank Information')
-                                ->icon('heroicon-o-building-office-2')
-                                ->schema([
-                                    Grid::make(2)
-                                        ->schema([
-                                            Forms\Components\TextInput::make('bank_name')
-                                                ->maxLength(100),
-                                            PhoneInput::make('bank_phone')
-                                                ->defaultCountry('KE')
-                                                ->displayNumberFormat(PhoneInputNumberType::INTERNATIONAL)
-                                                ->focusNumberFormat(PhoneInputNumberType::INTERNATIONAL),
-                                        ]),
-                                    RichEditor::make('bank_address')
-                                        ->columnSpanFull(),
-                                ]),
-                            Tabs\Tab::make('Additional Information')
-                                ->icon('heroicon-o-adjustments-horizontal')
-                                ->schema([
-                                    Forms\Components\TextInput::make('description')
-                                        ->maxLength(255),
-                                    Forms\Components\Textarea::make('notes')
-                                        ->columnSpanFull(),
-                                    Forms\Components\TextInput::make('bank_website')
-                                        ->prefix('https://')
-                                        ->url()
-                                        ->maxLength(255),
-                                ]),
-                        ]),
-                ])->columnSpan(8),
-            Group::make()
-                ->schema([
-                    Section::make('International Banking Details')
-                        ->schema([
-                            Forms\Components\TextInput::make('bic_swift_code')
-                                ->maxLength(11),
-                            Forms\Components\TextInput::make('iban')
-                                ->maxLength(34),
-                        ]),
-                    Section::make('Routing Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('aba_routing_number')
-                                ->maxLength(9),
-                            Forms\Components\TextInput::make('ach_routing_number')
-                                ->maxLength(9),
-                        ]),
-                ])->columnSpan(4),
-        ])->columns(12);
+            ->schema([
+                Group::make()
+                    ->schema([
+                        Section::make('Account Information')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\Select::make('type')
+                                            ->enum(AccountType::class)
+                                            ->options(AccountType::class)
+                                            ->required()
+                                            ->searchable()
+                                            ->preload()
+                                            ->default(AccountType::DEFAULT),
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(100),
+                                    ]),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('number')
+                                            ->required()
+                                            ->maxLength(20),
+                                        ToggleButton::make('enabled')
+                                            ->label('Default')
+                                            ->offColor('danger')
+                                            ->onColor('info')
+                                            ->offLabel('No')
+                                            ->onLabel('Yes')
+                                            ->required(),
+                                    ]),
+                            ]),
+                        Section::make('Currency & Status')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\Select::make('currency_id')
+                                            ->relationship('currency', 'abbr')
+                                            ->label('Currency')
+                                            ->optionsLimit(40)
+                                            ->searchable()
+                                            ->live()
+                                            ->preload()
+                                            ->getSearchResultsUsing(fn (string $search): array => Currency::whereAny([
+                                                'name', 'abbr', 'symbol', 'code'], 'like', "%{$search}%")->limit(50)->pluck('abbr', 'id')->toArray())
+                                            ->getOptionLabelUsing(fn ($value): ?string => Currency::find($value)?->abbr)
+                                            ->loadingMessage('Loading currencies...')
+                                            ->searchPrompt('Search currencies by their symbol, abbreviation or country')
+                                            ->required(),
+                                        Forms\Components\Select::make('status')
+                                            ->required()
+                                            ->enum(AccountStatus::class)
+                                            ->options(AccountStatus::class)
+                                            ->searchable()
+                                            ->preload()
+                                            ->default(AccountStatus::DEFAULT),
+                                    ]),
+                            ]),
+                        Tabs::make('Account Specifications')
+                            ->tabs([
+                                Tabs\Tab::make('Bank Information')
+                                    ->icon('heroicon-o-building-office-2')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('bank_name')
+                                                    ->maxLength(100),
+                                                PhoneInput::make('bank_phone')
+                                                    ->defaultCountry('KE')
+                                                    ->displayNumberFormat(PhoneInputNumberType::INTERNATIONAL)
+                                                    ->focusNumberFormat(PhoneInputNumberType::INTERNATIONAL),
+                                            ]),
+                                        RichEditor::make('bank_address')
+                                            ->columnSpanFull(),
+                                    ]),
+                                Tabs\Tab::make('Additional Information')
+                                    ->icon('heroicon-o-adjustments-horizontal')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('description')
+                                            ->maxLength(255),
+                                        Forms\Components\Textarea::make('notes')
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('bank_website')
+                                            ->prefix('https://')
+                                            ->url()
+                                            ->maxLength(255),
+                                    ]),
+                            ]),
+                    ])->columnSpan(8),
+                Group::make()
+                    ->schema([
+                        Section::make('International Banking Details')
+                            ->schema([
+                                Forms\Components\TextInput::make('bic_swift_code')
+                                    ->maxLength(11),
+                                Forms\Components\TextInput::make('iban')
+                                    ->maxLength(34),
+                            ]),
+                        Section::make('Routing Information')
+                            ->schema([
+                                Forms\Components\TextInput::make('aba_routing_number')
+                                    ->maxLength(9),
+                                Forms\Components\TextInput::make('ach_routing_number')
+                                    ->maxLength(9),
+                            ]),
+                    ])->columnSpan(4),
+            ])->columns(12);
     }
 
     public static function table(Table $table): Table

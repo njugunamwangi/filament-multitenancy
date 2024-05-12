@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -17,10 +16,10 @@ class OwnerSeeder extends Seeder
     {
         $owners = ['Owner 1', 'Owner 2'];
 
-        foreach($owners as $owner) {
+        foreach ($owners as $owner) {
             $user = User::create([
                 'name' => $owner,
-                'email' => Str::slug($owner) . '@drones.test',
+                'email' => Str::slug($owner).'@drones.test',
                 'password' => bcrypt('Password'),
                 'email_verified_at' => now(),
             ]);

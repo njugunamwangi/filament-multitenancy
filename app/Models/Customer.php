@@ -16,11 +16,11 @@ class Customer extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function lead(): BelongsTo
     {
-         return $this->belongsTo(Lead::class);
+        return $this->belongsTo(Lead::class);
     }
 }

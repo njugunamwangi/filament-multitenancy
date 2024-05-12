@@ -18,19 +18,19 @@ class Account extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function currency(): BelongsTo
     {
-         return $this->belongsTo(Currency::class);
+        return $this->belongsTo(Currency::class);
     }
 
     protected function casts(): array
     {
-         return [
-             'type' => AccountType::class,
-             'status' => AccountStatus::class
-         ];
+        return [
+            'type' => AccountType::class,
+            'status' => AccountStatus::class,
+        ];
     }
 }

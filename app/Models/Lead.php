@@ -14,6 +14,6 @@ class Lead extends Model
 
     public function customers(): HasMany
     {
-         return $this->hasMany(Customer::class);
+        return $this->hasMany(Customer::class);
     }
 }

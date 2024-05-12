@@ -18,8 +18,8 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasFactory;
-    use Notifiable;
     use HasRoles;
+    use Notifiable;
     use SoftDeletes;
 
     /**
@@ -58,20 +58,20 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     public function canAccessPanel(Panel $panel): bool
     {
-         if($panel->getId() == 'admin') {
+        if ($panel->getId() == 'admin') {
 
             return $this->hasRole(Role::ADMIN);
 
-         } elseif($panel->getId() == 'app') {
+        } elseif ($panel->getId() == 'app') {
 
             return true;
 
-         }
+        }
     }
 
     public function companies(): HasMany
     {
-         return $this->hasMany(Company::class);
+        return $this->hasMany(Company::class);
     }
 
     public function getTenants(Panel $panel): Collection

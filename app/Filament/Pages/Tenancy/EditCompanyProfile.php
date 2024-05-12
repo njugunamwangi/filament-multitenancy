@@ -3,7 +3,6 @@
 namespace App\Filament\Pages\Tenancy;
 
 use App\Enums\EntityType;
-use App\Models\Profile;
 use Awcodes\Curator\Components\Forms\CuratorPicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
@@ -36,7 +35,7 @@ class EditCompanyProfile extends EditTenantProfile
                         Section::make()
                             ->schema([
                                 TextInput::make('name'),
-                            ])->columnSpan(8)
+                            ])->columnSpan(8),
                     ])->columns(12),
                 Group::make()
                     ->schema([
@@ -51,8 +50,8 @@ class EditCompanyProfile extends EditTenantProfile
                                             ->required()
                                             ->displayNumberFormat(PhoneInputNumberType::INTERNATIONAL)
                                             ->focusNumberFormat(PhoneInputNumberType::INTERNATIONAL),
-                                    ])
-                                ]),
+                                    ]),
+                            ]),
                         Section::make('Currency & Registration')
                             ->schema([
                                 Grid::make(2)
@@ -72,10 +71,10 @@ class EditCompanyProfile extends EditTenantProfile
                                             ->options(EntityType::class)
                                             ->searchable()
                                             ->preload()
-                                            ->default(EntityType::DEFAULT)
-                                    ])
-                            ])
-                    ])
+                                            ->default(EntityType::DEFAULT),
+                                    ]),
+                            ]),
+                    ]),
             ]);
     }
 }

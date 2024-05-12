@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Settings\Resources\CurrencyResource\Pages;
 
 use App\Filament\Clusters\Settings\Resources\CurrencyResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateCurrency extends CreateRecord
