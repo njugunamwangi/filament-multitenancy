@@ -6,6 +6,7 @@ use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
 use App\Models\CompanyLead;
 use App\Models\Customer;
+use App\Models\Tag;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -57,7 +58,20 @@ class CustomerResource extends Resource
                     ->label('Lead')
                     ->required()
                     ->searchable()
+                    ->preload(),
+                Select::make('tags')
+                // ->options(Tag::where('company_id', Filament::getTenant()->id)->pluck('name', 'id'))
+                    ->relationship('tags', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', Filament::getTenant()->id))
+                    ->multiple()
+                    ->searchable()
                     ->preload()
+                    ->createOptionForm(Tag::getForm())
+                    ->createOptionModalHeading('Create Tag')
+                    ->createOptionUsing(function (array $data): int {
+                        $data['company_id'] = Filament::getTenant()->id;
+
+                        return Tag::create($data)->getKey();
+                    })
             ]);
     }
 
@@ -115,6 +129,7 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'view' => Pages\ViewCustomer::route('/{record}'),
+            'edit' => Pages\EditCustomer::route('/{record}/edit'),
         ];
     }
 

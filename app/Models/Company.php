@@ -45,4 +45,9 @@ class Company extends Model
     {
          return $this->hasMany(CompanyLead::class);
     }
+
+    public function tags(): HasMany
+    {
+         return $this->hasMany(Tag::class);
+    }
 }
