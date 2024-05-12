@@ -41,8 +41,8 @@ class Company extends Model
         return $this->hasMany(Customer::class);
     }
 
-    public function leads(): BelongsToMany
+    public function companyLeads(): HasMany
     {
-         return $this->belongsToMany(Lead::class);
+         return $this->hasMany(CompanyLead::class);
     }
 }

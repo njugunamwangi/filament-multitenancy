@@ -4,14 +4,19 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
+use App\Models\CompanyLead;
 use App\Models\Customer;
+use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
@@ -25,11 +30,13 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $leads = DB::table('company_leads')
+            ->where('company_id', '=', Filament::getTenant()->id)
+            ->join('leads', 'company_leads.lead_id', '=', 'leads.id')
+            ->get();
+
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -45,6 +52,12 @@ class CustomerResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
+                Select::make('lead_id')
+                    ->options($leads->pluck('name', 'lead_id'))
+                    ->label('Lead')
+                    ->required()
+                    ->searchable()
+                    ->preload()
             ]);
     }
 
@@ -52,15 +65,13 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
+                TextColumn::make('lead.name'),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -79,7 +90,8 @@ class CustomerResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -103,7 +115,6 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'view' => Pages\ViewCustomer::route('/{record}'),
-            'edit' => Pages\EditCustomer::route('/{record}/edit'),
         ];
     }
 
