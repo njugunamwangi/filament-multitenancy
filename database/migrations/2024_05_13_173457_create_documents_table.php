@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Company;
+use App\Models\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,14 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('email');
-            $table->string('phone');
-            $table->longText('description')->nullable();
-            $table->softDeletes();
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->string('file_path');
+            $table->longText('comments');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('documents');
     }
 };
