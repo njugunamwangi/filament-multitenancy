@@ -50,4 +50,9 @@ class Company extends Model
     {
          return $this->hasMany(Lead::class);
     }
+
+    public function equipment(): HasMany
+    {
+         return $this->hasMany(Equipment::class);
+    }
 }

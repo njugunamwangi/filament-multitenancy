@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Brand extends Model
@@ -24,5 +25,10 @@ class Brand extends Model
                 ->required()
                 ->unique(ignoreRecord: true),
          ];
+    }
+
+    public function equipment(): HasMany
+    {
+         return $this->hasMany(Equipment::class);
     }
 }
