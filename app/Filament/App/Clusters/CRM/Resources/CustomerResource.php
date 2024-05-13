@@ -4,22 +4,33 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
+use App\Models\Brand;
 use App\Models\Customer;
+use App\Models\Equipment;
 use App\Models\Lead;
 use App\Models\Tag;
+use App\Models\Task;
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section as ComponentsSection;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -27,6 +38,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Wallo\FilamentSelectify\Components\ToggleButton;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
@@ -135,14 +147,61 @@ class CustomerResource extends Resource
                 // Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->hidden(fn($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
-                    ->hidden(fn($record) => $record->trashed())
-                    ->slideOver(),
-                Tables\Actions\DeleteAction::make(),
-                RestoreAction::make()
-                    ->color('warning')
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->hidden(fn($record) => $record->trashed()),
+                    Tables\Actions\EditAction::make()
+                        ->hidden(fn($record) => $record->trashed())
+                        ->slideOver(),
+                    Tables\Actions\DeleteAction::make(),
+                    RestoreAction::make()
+                        ->color('warning'),
+                    Action::make('task')
+                        ->label('Add Task')
+                        ->icon('heroicon-o-calendar-days')
+                        ->color('success')
+                        ->form([
+                            DatePicker::make('due_date'),
+                            Textarea::make('description')
+                                ->required()
+                                ->columnSpanFull(),
+                            Grid::make(2)
+                                ->schema([
+                                    ToggleButton::make('requires_equipment')
+                                        ->live(),
+                                    ToggleButton::make('is_completed')
+                                        ->label('Completed?'),
+                                ]),
+                            Select::make('equipment')
+                                ->live()
+                                ->visible(fn(Get $get) => $get('requires_equipment'))
+                                ->requiredWith('requires_equipment')
+                                ->multiple()
+                                ->options(fn() => Equipment::query()->where('company_id', Filament::getTenant()->id)->get()->pluck('registration', 'id'))
+                                ->preload(),
+                        ])
+                        ->action(function(array $data, $record) {
+                            $data['company_id'] = Filament::getTenant()->id;
+
+                            $task = $record->tasks()->create([
+                                'company_id' => $data['company_id'],
+                                'due_date' => $data['due_date'],
+                                'requires_equipment' => $data['requires_equipment'],
+                                'is_completed' => $data['is_completed'],
+                                'description' => $data['description'],
+                            ]);
+
+                            if($data['requires_equipment'] && !empty($data['equipment'])) {
+                                $task->equipment()->attach($data['equipment']);
+                            }
+
+                            Notification::make()
+                                ->title('New Task #'.$record->id)
+                                ->success()
+                                ->icon('heroicon-o-calendar-days')
+                                ->send();
+                        })
+                ])
             ])
             ->recordUrl(fn($record) => $record->trashed() ? null : Pages\ViewCustomer::getUrl([$record->id]))
             ->bulkActions([

@@ -26,15 +26,7 @@ class EquipmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\Select::make('brand_id')
-                    ->relationship('brand', 'name')
-                    ->createOptionForm(Brand::getForm())
-                    ->required(),
-                Forms\Components\TextInput::make('registration')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+            ->schema(Equipment::getForm());
     }
 
     public static function table(Table $table): Table

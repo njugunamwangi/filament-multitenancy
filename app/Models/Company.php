@@ -55,4 +55,9 @@ class Company extends Model
     {
          return $this->hasMany(Equipment::class);
     }
+
+    public function tasks(): HasMany
+    {
+         return $this->hasMany(Task::class);
+    }
 }
