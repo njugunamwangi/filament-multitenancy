@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\App\Clusters\CRM\Resources\CompanyLeadResource\Pages;
+namespace App\Filament\App\Clusters\CRM\Resources\LeadResource\Pages;
 
-use App\Filament\App\Clusters\CRM\Resources\CompanyLeadResource;
+use App\Filament\App\Clusters\CRM\Resources\LeadResource;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateCompanyLead extends CreateRecord
+class CreateLead extends CreateRecord
 {
-    protected static string $resource = CompanyLeadResource::class;
+    protected static string $resource = LeadResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

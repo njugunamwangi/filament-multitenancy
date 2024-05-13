@@ -20,13 +20,13 @@ class Customer extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function lead(): BelongsTo
-    {
-        return $this->belongsTo(Lead::class);
-    }
-
     public function tags(): BelongsToMany
     {
          return $this->belongsToMany(Tag::class);
+    }
+
+    public function lead(): BelongsTo
+    {
+         return $this->belongsTo(Lead::class);
     }
 }

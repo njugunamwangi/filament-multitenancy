@@ -41,13 +41,13 @@ class Company extends Model
         return $this->hasMany(Customer::class);
     }
 
-    public function companyLeads(): HasMany
-    {
-         return $this->hasMany(CompanyLead::class);
-    }
-
     public function tags(): HasMany
     {
          return $this->hasMany(Tag::class);
+    }
+
+    public function leads(): HasMany
+    {
+         return $this->hasMany(Lead::class);
     }
 }

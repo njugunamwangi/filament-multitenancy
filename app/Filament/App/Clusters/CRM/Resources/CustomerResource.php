@@ -4,8 +4,8 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
-use App\Models\CompanyLead;
 use App\Models\Customer;
+use App\Models\Lead;
 use App\Models\Tag;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -31,11 +31,6 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $leads = DB::table('company_leads')
-            ->where('company_id', '=', Filament::getTenant()->id)
-            ->join('leads', 'company_leads.lead_id', '=', 'leads.id')
-            ->get();
-
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -53,14 +48,7 @@ class CustomerResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
-                Select::make('lead_id')
-                    ->options($leads->pluck('name', 'lead_id'))
-                    ->label('Lead')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
                 Select::make('tags')
-                // ->options(Tag::where('company_id', Filament::getTenant()->id)->pluck('name', 'id'))
                     ->relationship('tags', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', Filament::getTenant()->id))
                     ->multiple()
                     ->searchable()
@@ -71,7 +59,18 @@ class CustomerResource extends Resource
                         $data['company_id'] = Filament::getTenant()->id;
 
                         return Tag::create($data)->getKey();
-                    })
+                    }),
+                Select::make('lead_id')
+                    ->relationship('lead', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', Filament::getTenant()->id))
+                    ->searchable()
+                    ->preload()
+                    ->createOptionModalHeading('Create Lead')
+                    ->createOptionForm(Lead::getForm())
+                    ->createOptionUsing(function (array $data): int {
+                        $data['company_id'] = Filament::getTenant()->id;
+
+                        return Lead::create($data)->getKey();
+                    }),
             ]);
     }
 
@@ -85,7 +84,6 @@ class CustomerResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
-                TextColumn::make('lead.name'),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

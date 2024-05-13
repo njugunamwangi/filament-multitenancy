@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Clusters\CRM\Resources\LeadResource\Pages;
+namespace App\Filament\App\Clusters\CRM\Resources\LeadResource\Pages;
 
-use App\Filament\Clusters\CRM\Resources\LeadResource;
+use App\Filament\App\Clusters\CRM\Resources\LeadResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

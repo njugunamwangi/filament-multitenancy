@@ -28,6 +28,7 @@ class CompanyResource extends Resource
             ->schema([
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
+                    ->label('Owner')
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
