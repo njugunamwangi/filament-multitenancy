@@ -14,6 +14,7 @@
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
+        "saade/filament-fullcalendar": "^3.2",
         "ysfkaya/filament-phone-input": "^2.3"
     },
     "require-dev": {

@@ -23,6 +23,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -47,6 +48,7 @@ class AppPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                FilamentFullCalendarPlugin::make(),
                 CuratorPlugin::make()
                     ->label('Media')
                     ->pluralLabel('Media')
