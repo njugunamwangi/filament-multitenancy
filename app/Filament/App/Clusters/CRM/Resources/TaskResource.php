@@ -5,6 +5,7 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\TaskResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\TaskResource\RelationManagers;
+use App\Filament\Resources\UserResource;
 use App\Models\Equipment;
 use App\Models\Task;
 use Filament\Facades\Filament;
@@ -22,6 +23,8 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action as ActionsAction;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,8 +40,6 @@ class TaskResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $company_id = Filament::getTenant()->id;
-
         return $form
             ->schema(Task::getForm());
     }
@@ -93,7 +94,7 @@ class TaskResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->numeric()
+                    ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->customer_id]))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
@@ -117,8 +118,27 @@ class TaskResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->color('primary'),
+                    ActionsAction::make('complete')
+                        ->icon('heroicon-o-check-badge')
+                        ->label('Mark as completed')
+                        ->requiresConfirmation()
+                        ->color('success')
+                        ->modalDescription(fn($record) => 'Mark task #'.$record->id.' as completed')
+                        ->action(function($record){
+                            $record->completed();
+
+                            Notification::make()
+                                ->title('Task Completed')
+                                ->body('You marked task #' .$record->id. ' as completed')
+                                ->success()
+                                ->send();
+                        })
+                ])
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

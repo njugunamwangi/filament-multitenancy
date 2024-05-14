@@ -20,8 +20,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists\Components\Actions\Action as ActionsAction;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section as ComponentsSection;
+use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
@@ -259,6 +261,57 @@ class CustomerResource extends Resource
                             ])
                             ->columns()
                     ]),
+                ComponentsSection::make('Tasks')
+                    ->visible(fn($record) => $record->tasks()->count() > 0)
+                    ->schema([
+                        Tabs::make()
+                            ->tabs([
+                                Tabs\Tab::make('Complete Tasks')
+                                    ->hiddenLabel()
+                                    ->badge(fn($record) => $record->completeTasks()->count())
+                                    ->schema([
+                                        RepeatableEntry::make('completeTasks')
+                                            ->schema([
+                                                TextEntry::make('task')
+                                                    ->getStateUsing(fn($record) => '#'.$record->id),
+                                                TextEntry::make('due_date')
+                                                    ->date()
+                                            ])
+                                            ->columns()
+                                    ]),
+                                Tabs\Tab::make('Incomplete Tasks')
+                                    ->hiddenLabel()
+                                    ->badge(fn($record) => $record->incompleteTasks()->count())
+                                    ->schema([
+                                        RepeatableEntry::make('incompleteTasks')
+                                            ->schema([
+                                                TextEntry::make('task')
+                                                    ->getStateUsing(fn($record) => '#'.$record->id),
+                                                TextEntry::make('due_date')
+                                                    ->date()
+                                                    ->suffixAction(
+                                                        ActionsAction::make('completed')
+                                                            ->visible(fn($record) => !$record->is_completed)
+                                                            ->label('Mark as completed')
+                                                            ->requiresConfirmation()
+                                                            ->color('success')
+                                                            ->button()
+                                                            ->icon('heroicon-o-check-badge')
+                                                            ->action(function($record) {
+                                                                $record->completed();
+
+                                                                Notification::make()
+                                                                    ->title('Task Completed')
+                                                                    ->body('You marked task #' .$record->id. ' as completed')
+                                                                    ->success()
+                                                                    ->send();
+                                                            })
+                                                    )
+                                            ])
+                                            ->columns()
+                                    ]),
+                            ])
+                    ])
             ]);
     }
 

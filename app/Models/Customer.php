@@ -40,4 +40,16 @@ class Customer extends Model
     {
          return $this->hasMany(Task::class);
     }
+
+    public function completeTasks(): HasMany
+    {
+        return $this->hasMany(Task::class)
+                        ->where('is_completed', true);
+    }
+
+    public function incompleteTasks(): HasMany
+    {
+        return $this->hasMany(Task::class)
+                        ->where('is_completed', false);
+    }
 }
