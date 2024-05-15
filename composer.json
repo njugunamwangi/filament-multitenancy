@@ -13,6 +13,7 @@
         "filament/filament": "^3.2",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
+        "laraveldaily/laravel-invoices": "^4.0",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
         "saade/filament-fullcalendar": "^3.2",
