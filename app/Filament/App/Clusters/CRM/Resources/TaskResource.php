@@ -7,6 +7,7 @@ use App\Filament\App\Clusters\CRM\Resources\TaskResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\TaskResource\RelationManagers;
 use App\Filament\Resources\UserResource;
 use App\Models\Equipment;
+use App\Models\Expense;
 use App\Models\Task;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -22,6 +23,7 @@ use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as ActionsAction;
 use Filament\Tables\Actions\ActionGroup;
@@ -136,6 +138,72 @@ class TaskResource extends Resource
                                 ->body('You marked task #' .$record->id. ' as completed')
                                 ->success()
                                 ->send();
+                        }),
+                    ActionsAction::make('expenses')
+                        ->label('Track Expenses')
+                        ->modalDescription(fn($record) => 'Expenses for task #'.$record->id)
+                        ->stickyModalFooter()
+                        ->stickyModalHeader()
+                        ->icon('heroicon-o-arrow-trending-up')
+                        ->color('danger')
+                        ->modalWidth(MaxWidth::SevenExtraLarge)
+                        ->modalSubmitActionLabel('Save')
+                        ->fillForm(fn ($record): array => [
+                            'currency_id' => $record->expense?->currency_id,
+                            'accommodation' => $record->expense?->accommodation,
+                            'subsistence' => $record->expense?->subsistence,
+                            'equipment' => $record->expense?->equipment,
+                            'fuel' => $record->expense?->fuel,
+                            'labor' => $record->expense?->labor,
+                            'material' => $record->expense?->material,
+                            'misc' => $record->expense?->misc,
+                        ])
+                        ->form(Expense::getForm())
+                        ->action(function($record, array $data) {
+                            if ($record->expense) {
+                                $record->expense()->update([
+                                    'company_id' => Filament::getTenant()->id,
+                                    'currency_id' => $data['currency_id'],
+                                    'accommodation' => $data['accommodation'],
+                                    'subsistence' => $data['subsistence'],
+                                    'equipment' => $data['equipment'],
+                                    'fuel' => $data['fuel'],
+                                    'labor' => $data['labor'],
+                                    'material' => $data['material'],
+                                    'misc' => $data['misc'],
+                                    'total' => $data['total'],
+                                ]);
+                            } else {
+                                $record->expense()->create([
+                                    'company_id' => Filament::getTenant()->id,
+                                    'currency_id' => $data['currency_id'],
+                                    'accommodation' => $data['accommodation'],
+                                    'subsistence' => $data['subsistence'],
+                                    'equipment' => $data['equipment'],
+                                    'fuel' => $data['fuel'],
+                                    'labor' => $data['labor'],
+                                    'material' => $data['material'],
+                                    'misc' => $data['misc'],
+                                    'total' => $data['total'],
+                                ]);
+                            }
+                        })
+                        ->after(function ($record) {
+                            if ($record->expense) {
+                                Notification::make()
+                                    ->title('Expense updated')
+                                    ->info()
+                                    ->icon('heroicon-o-check')
+                                    ->body('Task expenses have been updated successfully')
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Expense created')
+                                    ->success()
+                                    ->icon('heroicon-o-check')
+                                    ->body('Task expenses have been created successfully')
+                                    ->send();
+                            }
                         })
                 ])
 

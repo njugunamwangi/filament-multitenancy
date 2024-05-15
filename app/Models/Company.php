@@ -31,6 +31,11 @@ class Company extends Model
         return $this->belongsTo(Currency::class);
     }
 
+    public function expenses(): HasMany
+    {
+         return $this->hasMany(Expense::class);
+    }
+
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);
