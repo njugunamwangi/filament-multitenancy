@@ -63,8 +63,7 @@ class Expense extends Model
                 ->preload()
                 ->optionsLimit(80)
                 ->label('Currency')
-                ->required()
-                ,
+                ->required(),
             Tabs::make()
                 ->tabs([
                     Tabs\Tab::make('Accommodation')

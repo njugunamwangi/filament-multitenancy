@@ -127,6 +127,7 @@ class TaskResource extends Resource
                     ActionsAction::make('complete')
                         ->icon('heroicon-o-check-badge')
                         ->label('Mark as completed')
+                        ->visible(fn($record) => !$record->is_completed)
                         ->requiresConfirmation()
                         ->color('success')
                         ->modalDescription(fn($record) => 'Mark task #'.$record->id.' as completed')
