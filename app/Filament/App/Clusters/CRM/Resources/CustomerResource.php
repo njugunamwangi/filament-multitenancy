@@ -162,6 +162,7 @@ class CustomerResource extends Resource
                         ->label('Add Task')
                         ->icon('heroicon-o-calendar-days')
                         ->color('success')
+                        ->modalSubmitActionLabel('Add Task')
                         ->form([
                             DatePicker::make('due_date'),
                             Textarea::make('description')
