@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9d78e1851a116371193d9b211473eef",
+    "content-hash": "b16df8be22b16a82138d0e4acc9261c4",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -3235,6 +3235,54 @@
                 "source": "https://github.com/LaravelDaily/laravel-invoices/tree/4.0.0"
             },
             "time": "2024-03-14T08:31:01+00:00"
+        },
+        {
+            "name": "lasserafn/php-initials",
+            "version": "3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LasseRafn/php-initials.git",
+                "reference": "d287e1542687390eb68de779949bc0adc49e2d52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LasseRafn/php-initials/zipball/d287e1542687390eb68de779949bc0adc49e2d52",
+                "reference": "d287e1542687390eb68de779949bc0adc49e2d52",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6|^7.0|^7.1|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LasseRafn\\Initials\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lasse Rafn",
+                    "email": "lasserafn@gmail.com"
+                }
+            ],
+            "description": "A package to generate initials in PHP",
+            "keywords": [
+                "Initials",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/LasseRafn/php-initials/issues",
+                "source": "https://github.com/LasseRafn/php-initials/tree/3.1"
+            },
+            "time": "2020-12-24T12:25:51+00:00"
         },
         {
             "name": "league/commonmark",
