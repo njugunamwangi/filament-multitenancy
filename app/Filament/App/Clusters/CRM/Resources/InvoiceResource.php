@@ -3,11 +3,11 @@
 namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
-use App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
-use App\Filament\App\Clusters\CRM\Resources\QuoteResource\RelationManagers;
+use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\Pages;
+use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\RelationManagers;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\Quote;
+use App\Models\Invoice;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -21,8 +21,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Infolists\Components\ViewEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -30,9 +28,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Wallo\FilamentSelectify\Components\ToggleButton;
 
-class QuoteResource extends Resource
+class InvoiceResource extends Resource
 {
-    protected static ?string $model = Quote::class;
+    protected static ?string $model = Invoice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -55,7 +53,7 @@ class QuoteResource extends Resource
                                 Forms\Components\Select::make('task_id')
                                     ->visible(fn(Get $get) => $get('customer_id'))
                                     ->live()
-                                    ->relationship('task', 'id' , modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('quote')),
+                                    ->relationship('task', 'id' , modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('invoice')),
                             ]),
                             Forms\Components\Select::make('currency_id')
                                 ->relationship('currency', 'abbr')
@@ -146,20 +144,22 @@ class QuoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('task.id')
-                    ->getStateUsing(fn($record) => $record->task ? '#'.$record->task->id : '')
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('currency.abbr')
-                    ->description(fn($record) => $record->currency->name)
+                Tables\Columns\TextColumn::make('currency.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('quote.serial')
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subtotal')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxes')
                     ->numeric()
-                    ->suffix('%')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
@@ -181,9 +181,6 @@ class QuoteResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->recordUrl(function ($record) {
-                return Pages\ViewQuote::getUrl([$record]);
-            })
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -200,19 +197,6 @@ class QuoteResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                ViewEntry::make('quote')
-                    ->columnSpanFull()
-                    ->viewData([
-                        'record' => $infolist->record
-                    ])
-                    ->view('infolists.components.quote-view')
-            ]);
-    }
-
     public static function getRelations(): array
     {
         return [
@@ -223,10 +207,10 @@ class QuoteResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListQuotes::route('/'),
-            'create' => Pages\CreateQuote::route('/create'),
-            'view' => Pages\ViewQuote::route('/{record}'),
-            'edit' => Pages\EditQuote::route('/{record}/edit'),
+            'index' => Pages\ListInvoices::route('/'),
+            'create' => Pages\CreateInvoice::route('/create'),
+            'view' => Pages\ViewInvoice::route('/{record}'),
+            'edit' => Pages\EditInvoice::route('/{record}/edit'),
         ];
     }
 

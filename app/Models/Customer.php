@@ -57,4 +57,9 @@ class Customer extends Model
     {
          return $this->hasMany(Quote::class);
     }
+
+    public function invoices(): HasMany
+    {
+         return $this->hasMany(Invoice::class);
+    }
 }

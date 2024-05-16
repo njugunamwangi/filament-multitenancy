@@ -48,6 +48,11 @@ class Task extends Model
          return $this->hasOne(Quote::class);
     }
 
+    public function invoice(): HasOne
+    {
+         return $this->hasOne(Invoice::class);
+    }
+
     public function completed()
     {
          $this->update(['is_completed' => true]);

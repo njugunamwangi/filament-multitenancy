@@ -7,7 +7,6 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
@@ -15,7 +14,7 @@ use LaravelDaily\Invoices\Classes\Party;
 use LaravelDaily\Invoices\Facades\Invoice as FacadesInvoice;
 use LasseRafn\Initials\Initials;
 
-class Quote extends Model
+class Invoice extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -36,9 +35,9 @@ class Quote extends Model
          return $this->belongsTo(Company::class);
     }
 
-    public function customer(): BelongsTo
+    public function task(): BelongsTo
     {
-         return $this->belongsTo(Customer::class);
+         return $this->belongsTo(Task::class);
     }
 
     public function currency(): BelongsTo
@@ -46,14 +45,14 @@ class Quote extends Model
          return $this->belongsTo(Currency::class);
     }
 
-    public function task(): BelongsTo
+    public function customer(): BelongsTo
     {
-         return $this->belongsTo(Task::class);
+         return $this->belongsTo(Customer::class);
     }
 
-    public function invoice(): HasOne
+    public function quote(): BelongsTo
     {
-         return $this->hasOne(Invoice::class);
+         return $this->belongsTo(Quote::class);
     }
 
     public function savePdf()
@@ -98,7 +97,7 @@ class Quote extends Model
             ->buyer($customer)
             ->seller($seller)
             ->taxRate($this->taxes)
-            ->name('Quote')
+            ->name('Invoice')
             ->filename($this->serial)
             ->logo(empty(Company::find($company->id)->logo_id) ? '' : storage_path('/app/public/'.Company::find($company->id)->logo->path))
             ->series((new Initials)->name($company->name)->length(str_word_count($company->name))->generate())
@@ -113,6 +112,6 @@ class Quote extends Model
             ->currencyFormat($this->currency->symbol_first ? $this->currency->symbol.' '.'{VALUE}' : '{VALUE}'.' '.$this->currency->symbol)
             ->currencyFraction($this->currency->subunit_name)
             ->notes($this->notes)
-            ->save('quotes');
+            ->save('invoices');
     }
 }

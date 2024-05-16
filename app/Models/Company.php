@@ -31,6 +31,11 @@ class Company extends Model
          return $this->belongsTo(Media::class, 'logo_id', 'id');
     }
 
+    public function invoices(): HasMany
+    {
+         return $this->hasMany(Invoice::class);
+    }
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
