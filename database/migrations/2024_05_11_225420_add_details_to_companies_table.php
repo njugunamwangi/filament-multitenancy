@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('company_registration')->nullable();
             $table->string('company_kra_pin')->nullable();
+            $table->longText('address')->nullable();
             $table->enum('entity_type', EntityType::values())->nullable()->default(EntityType::DEFAULT);
         });
     }
