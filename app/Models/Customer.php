@@ -52,4 +52,9 @@ class Customer extends Model
         return $this->hasMany(Task::class)
                         ->where('is_completed', false);
     }
+
+    public function quotes(): HasMany
+    {
+         return $this->hasMany(Quote::class);
+    }
 }

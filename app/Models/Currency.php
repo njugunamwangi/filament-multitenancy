@@ -21,4 +21,9 @@ class Currency extends Model
     {
          return $this->hasMany(Expense::class);
     }
+
+    public function quotes(): HasMany
+    {
+         return $this->hasMany(Quote::class);
+    }
 }

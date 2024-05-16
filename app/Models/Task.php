@@ -43,6 +43,11 @@ class Task extends Model
          return $this->belongsToMany(Equipment::class);
     }
 
+    public function quote(): HasOne
+    {
+         return $this->hasOne(Quote::class);
+    }
+
     public function completed()
     {
          $this->update(['is_completed' => true]);

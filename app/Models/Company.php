@@ -26,6 +26,11 @@ class Company extends Model
         return $this->hasMany(Media::class);
     }
 
+    public function logo(): BelongsTo
+    {
+         return $this->belongsTo(Media::class, 'logo_id', 'id');
+    }
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -64,5 +69,10 @@ class Company extends Model
     public function tasks(): HasMany
     {
          return $this->hasMany(Task::class);
+    }
+
+    public function quotes(): HasMany
+    {
+         return $this->hasMany(Quote::class);
     }
 }
