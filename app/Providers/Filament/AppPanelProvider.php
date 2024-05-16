@@ -34,6 +34,7 @@ class AppPanelProvider extends PanelProvider
             ->domain(env('APP_SUBDOMAIN'))
             ->login()
             ->registration()
+            ->passwordReset()
             ->colors([
                 'primary' => Color::Teal,
             ])
