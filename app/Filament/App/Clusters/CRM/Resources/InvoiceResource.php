@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Clusters\CRM\Resources;
 
+use App\Enums\InvoiceStatus;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\RelationManagers;
@@ -16,11 +17,14 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -55,14 +59,23 @@ class InvoiceResource extends Resource
                                     ->live()
                                     ->relationship('task', 'id' , modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('invoice')),
                             ]),
-                            Forms\Components\Select::make('currency_id')
-                                ->relationship('currency', 'abbr')
-                                ->default(Company::find($company_id)->currency_id)
-                                ->searchable()
-                                ->preload()
-                                ->optionsLimit(100)
-                                ->live()
-                                ->required(),
+                            Grid::make(2)
+                                ->schema([
+                                    Forms\Components\Select::make('currency_id')
+                                        ->relationship('currency', 'abbr')
+                                        ->default(Company::find($company_id)->currency_id)
+                                        ->searchable()
+                                        ->preload()
+                                        ->optionsLimit(100)
+                                        ->live()
+                                        ->required(),
+                                    Select::make('status')
+                                        ->enum(InvoiceStatus::class)
+                                        ->options(InvoiceStatus::class)
+                                        ->default(InvoiceStatus::DEFAULT)
+                                        ->searchable()
+                                        ->required()
+                                ])
                     ]),
                 Group::make()
                     ->columnSpanFull()
@@ -191,6 +204,19 @@ class InvoiceResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                ViewEntry::make('quote')
+                    ->columnSpanFull()
+                    ->viewData([
+                        'record' => $infolist->record
+                    ])
+                    ->view('infolists.components.invoice-view')
             ]);
     }
 
