@@ -65,7 +65,8 @@ class Task extends Model
                 ->searchable()
                 ->preload()
                 ->required(),
-            DatePicker::make('due_date'),
+            DatePicker::make('due_date')
+                ->required(),
             Textarea::make('description')
                 ->required()
                 ->columnSpanFull(),

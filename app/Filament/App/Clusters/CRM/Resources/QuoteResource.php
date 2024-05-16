@@ -143,7 +143,7 @@ class QuoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('task.id')
-                    ->numeric()
+                    ->getStateUsing(fn($record) => '#'.$record->task->id)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
@@ -156,11 +156,9 @@ class QuoteResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxes')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('serial_number')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('serial')
