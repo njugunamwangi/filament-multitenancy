@@ -104,7 +104,7 @@ class Quote extends Model
             ->currencyDecimals($this->currency->precision)
             ->currencyDecimalPoint($this->currency->decimal_mark)
             ->currencyThousandsSeparator($this->currency->thousands_separator)
-            ->currencyFormat($this->currency->symbol_first == true ? $this->currency->symbol.' '.'{VALUE}' : '{VALUE}'.' '.$this->currency->symbol)
+            ->currencyFormat($this->currency->symbol_first ? $this->currency->symbol.' '.'{VALUE}' : '{VALUE}'.' '.$this->currency->symbol)
             ->currencyFraction($this->currency->subunit_name)
             ->notes($this->notes)
             ->save('quotes');

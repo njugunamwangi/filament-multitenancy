@@ -21,6 +21,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -178,6 +180,9 @@ class QuoteResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(function ($record) {
+                return Pages\ViewQuote::getUrl([$record]);
+            })
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
@@ -191,6 +196,19 @@ class QuoteResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                ViewEntry::make('quote')
+                    ->columnSpanFull()
+                    ->viewData([
+                        'record' => $infolist->record
+                    ])
+                    ->view('infolists.components.quote-view')
             ]);
     }
 
