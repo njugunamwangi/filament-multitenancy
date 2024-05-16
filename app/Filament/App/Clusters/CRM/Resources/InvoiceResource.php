@@ -149,13 +149,10 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('currency.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('currency.abbr')
+                    ->description(fn($record) => $record->currency->name)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quote.serial')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('subtotal')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxes')

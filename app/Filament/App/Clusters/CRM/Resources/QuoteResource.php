@@ -5,8 +5,10 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource\RelationManagers;
+use App\Mail\SendInvoice;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Models\Invoice;
 use App\Models\Quote;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -23,11 +25,16 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action as ActionsAction;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Mail;
+use LasseRafn\Initials\Initials;
 use Wallo\FilamentSelectify\Components\ToggleButton;
 
 class QuoteResource extends Resource
@@ -154,9 +161,6 @@ class QuoteResource extends Resource
                 Tables\Columns\TextColumn::make('currency.abbr')
                     ->description(fn($record) => $record->currency->name)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('subtotal')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('taxes')
                     ->numeric()
                     ->suffix('%')
@@ -188,8 +192,115 @@ class QuoteResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->color('info'),
+                    ActionsAction::make('invoice')
+                        ->hidden(fn($record) => $record->invoice)
+                        ->color('success')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->modalIcon('heroicon-o-clipboard-document-check')
+                        ->modalDescription(fn($record) => 'Generate invoice for quote '. $record->serial)
+                        ->modalSubmitActionLabel('Generate Invoice')
+                        ->label('Generate Invoice')
+                        ->fillForm(fn($record): array => [
+                            'items' => $record->items,
+                            'taxes' => $record->taxes,
+                            'notes' => $record->notes,
+                        ])
+                        ->form([
+                            Group::make()
+                                ->columnSpanFull()
+                                ->schema([
+                                    Group::make()
+                                        ->schema([
+                                            Repeater::make('items')
+                                                ->schema([
+                                                    Textarea::make('description')
+                                                        ->required(),
+                                                    TextInput::make('quantity')
+                                                        ->default(1)
+                                                        ->required()
+                                                        ->numeric(),
+                                                    TextInput::make('unit_price')
+                                                        ->default(10000)
+                                                        ->required()
+                                                        ->live()
+                                                        ->numeric(),
+                                                ])
+                                                ->addActionLabel('Add Item')
+                                                ->columns(3)
+                                                ->live()
+                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                })
+                                                ->deleteAction(
+                                                    fn(Action $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                )
+                                        ])->columnSpan(8),
+                                    Group::make()
+                                        ->schema([
+                                            TextInput::make('subtotal')
+                                                ->readOnly()
+                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->afterStateHydrated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                }),
+                                            TextInput::make('taxes')
+                                                ->suffix('%')
+                                                ->numeric()
+                                                ->default(20)
+                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                }),
+                                            TextInput::make('total')
+                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->readOnly(),
+                                        ])->columnSpan(4)
+                                ])
+                                ->columns(12),
+                            RichEditor::make('notes')
+                                ->columnSpanFull()
+                                ->required(),
+                            ToggleButton::make('mail')
+                                ->default(true)
+                                ->label('Send Email to Customer?')
+                        ])
+                        ->action(function($record, array $data) {
+                            $company = Filament::getTenant();
+                            $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
+
+                            $invoice = $record->invoice()->create([
+                                'task_id' => $record->task->id ?? null,
+                                'customer_id' => $record->customer->id,
+                                'currency_id' => $record->currency->id,
+                                'company_id' => $company->id,
+                                'subtotal' => str_replace(',', '', $data['subtotal']),
+                                'taxes' => $record->taxes,
+                                'total' => str_replace(',', '', $data['total']),
+                                'serial_number' => $serial_number = (Invoice::query()->where('company_id', $company->id)->max('serial_number') ?? 0) + 1,
+                                'serial' => $series.'-'.str_pad($serial_number, 5, '0', STR_PAD_LEFT),
+                                'items' => $record->items,
+                                'notes' => $data['notes'],
+                                'mail' => $data['mail']
+                            ]);
+
+                            if ($invoice->mail) {
+
+                                $invoice->savePdf();
+
+                                Mail::to($invoice->customer->email)->send(new SendInvoice($invoice));
+
+                                Notification::make()
+                                    ->success()
+                                    ->icon('heroicon-o-bolt')
+                                    ->title('Invoice mailed')
+                                    ->body('Invoice mailed to ' . $invoice->customer->name)
+                                    ->send();
+                            }
+                        })
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

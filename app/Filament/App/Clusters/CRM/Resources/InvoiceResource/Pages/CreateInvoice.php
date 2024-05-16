@@ -44,8 +44,8 @@ class CreateInvoice extends CreateRecord
             Notification::make()
                 ->success()
                 ->icon('heroicon-o-bolt')
-                ->title('Quote mailed')
-                ->body('Quote mailed to ' . $invoice->customer->name)
+                ->title('Invoice mailed')
+                ->body('Invoice mailed to ' . $invoice->customer->name)
                 ->send();
         }
     }
