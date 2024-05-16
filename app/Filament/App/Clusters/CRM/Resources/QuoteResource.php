@@ -143,7 +143,7 @@ class QuoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('task.id')
-                    ->getStateUsing(fn($record) => '#'.$record->task->id)
+                    ->getStateUsing(fn($record) => $record->task ? '#'.$record->task->id : '')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Money;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
@@ -59,6 +60,7 @@ class Expense extends Model
          return [
             Select::make('currency_id')
                 ->options(Currency::all()->pluck('abbr', 'id'))
+                ->default(Company::find(Filament::getTenant()->id)->currency_id)
                 ->searchable()
                 ->preload()
                 ->optionsLimit(80)

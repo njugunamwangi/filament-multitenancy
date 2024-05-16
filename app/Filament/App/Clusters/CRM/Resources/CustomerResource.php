@@ -4,22 +4,31 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
+use App\Mail\SendQuote;
 use App\Models\Brand;
+use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Equipment;
 use App\Models\Lead;
+use App\Models\Quote;
 use App\Models\Tag;
 use App\Models\Task;
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action as ComponentsActionsAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Infolists\Components\Actions\Action as ActionsAction;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section as ComponentsSection;
@@ -30,6 +39,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
@@ -39,7 +49,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use LasseRafn\Initials\Initials;
 use Wallo\FilamentSelectify\Components\ToggleButton;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
@@ -203,6 +215,111 @@ class CustomerResource extends Resource
                                 ->success()
                                 ->icon('heroicon-o-calendar-days')
                                 ->send();
+                        }),
+                    Action::make('quote')
+                        ->label('Generate Quote')
+                        ->icon('heroicon-o-document-check')
+                        ->color('warning')
+                        ->modalWidth(MaxWidth::SixExtraLarge)
+                        ->modalSubmitActionLabel('Generate Quote')
+                        ->form([
+                            Select::make('currency_id')
+                                ->options(Currency::all()->pluck('abbr', 'id'))
+                                ->label('Currency')
+                                ->default(Company::find(Filament::getTenant()->id)->currency_id)
+                                ->searchable()
+                                ->preload()
+                                ->optionsLimit(100)
+                                ->live()
+                                ->required(),
+                            Group::make()
+                                ->columnSpanFull()
+                                ->schema([
+                                    Group::make()
+                                        ->schema([
+                                            Repeater::make('items')
+                                                ->schema([
+                                                    Textarea::make('description')
+                                                        ->required(),
+                                                    TextInput::make('quantity')
+                                                        ->default(1)
+                                                        ->required()
+                                                        ->numeric(),
+                                                    TextInput::make('unit_price')
+                                                        ->default(10000)
+                                                        ->required()
+                                                        ->live()
+                                                        ->numeric(),
+                                                ])
+                                                ->addActionLabel('Add Item')
+                                                ->columns(3)
+                                                ->live()
+                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                })
+                                                ->deleteAction(
+                                                    fn(ComponentsActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                )
+                                        ])->columnSpan(8),
+                                    Group::make()
+                                        ->schema([
+                                            TextInput::make('subtotal')
+                                                ->readOnly()
+                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->afterStateHydrated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                }),
+                                            TextInput::make('taxes')
+                                                ->suffix('%')
+                                                ->numeric()
+                                                ->default(20)
+                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                    self::updatedTotals($get, $set);
+                                                }),
+                                            TextInput::make('total')
+                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->readOnly(),
+                                        ])->columnSpan(4)
+                                ])
+                                ->columns(12),
+                            RichEditor::make('notes')
+                                ->required()
+                                ->columnSpanFull(),
+                            ToggleButton::make('mail')
+                                ->label('Send Email?')
+                                ->default('true'),
+                        ])
+                        ->action(function($record, array $data) {
+                            $company = Filament::getTenant();
+
+                            $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
+
+                            $quote = $record->quotes()->create([
+                                'currency_id' => $data['currency_id'],
+                                'company_id' => $company->id,
+                                'subtotal' => str_replace(',', '', $data['subtotal']),
+                                'taxes' => $data['taxes'],
+                                'total' => str_replace(',', '', $data['total']),
+                                'serial_number' => $serial_number = (Quote::query()->where('company_id', $company->id)->max('serial_number') ?? 0) + 1,
+                                'serial' => $series.'-'.str_pad($serial_number, 5, '0', STR_PAD_LEFT),
+                                'items' => $data['items'],
+                                'notes' => $data['notes'],
+                                'mail' => $data['mail'],
+                            ]);
+
+                            if ($quote->mail) {
+
+                                $quote->savePdf();
+
+                                Mail::to($quote->customer->email)->send(new SendQuote($quote));
+
+                                Notification::make()
+                                    ->warning()
+                                    ->icon('heroicon-o-bolt')
+                                    ->title('Quote mailed')
+                                    ->body('Quote mailed to ' . $quote->customer->name)
+                                    ->send();
+                            }
                         })
                 ])
             ])
@@ -214,6 +331,22 @@ class CustomerResource extends Resource
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function updatedTotals(Get $get, Set $set): void
+    {
+        $items = collect($get('items'));
+
+        $subtotal = 0;
+
+        foreach($items as $item) {
+            $aggregate = $item['quantity'] * $item['unit_price'];
+
+            $subtotal += $aggregate;
+        }
+
+        $set('subtotal', number_format($subtotal));
+        $set('total', number_format($subtotal + ($subtotal * ($get('taxes') / 100))));
     }
 
     public static function getRecordSubNavigation(Page $page): array
