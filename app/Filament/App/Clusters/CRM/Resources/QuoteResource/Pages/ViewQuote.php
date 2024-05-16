@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 
+use App\Enums\InvoiceStatus;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource;
 use App\Mail\SendInvoice;
 use App\Models\Currency;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Actions\Action as ActionsAction;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
@@ -47,6 +49,12 @@ class ViewQuote extends ViewRecord
                         'notes' => $record->notes,
                     ])
                     ->form([
+                        Select::make('status')
+                            ->enum(InvoiceStatus::class)
+                            ->options(InvoiceStatus::class)
+                            ->default(InvoiceStatus::DEFAULT)
+                            ->searchable()
+                            ->required(),
                         Group::make()
                             ->columnSpanFull()
                             ->schema([
@@ -113,6 +121,7 @@ class ViewQuote extends ViewRecord
                             'customer_id' => $record->customer->id,
                             'currency_id' => $record->currency->id,
                             'company_id' => $company->id,
+                            'status' => $data['status'],
                             'subtotal' => str_replace(',', '', $data['subtotal']),
                             'taxes' => $record->taxes,
                             'total' => str_replace(',', '', $data['total']),

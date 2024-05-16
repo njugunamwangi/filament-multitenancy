@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Money;
+use App\Enums\InvoiceStatus;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +27,8 @@ class Invoice extends Model
          return [
              'subtotal' => Money::class,
              'total' => Money::class,
-             'items' => 'json'
+             'items' => 'json',
+             'status' => InvoiceStatus::class,
          ];
     }
 
@@ -96,6 +98,7 @@ class Invoice extends Model
         FacadesInvoice::make()
             ->buyer($customer)
             ->seller($seller)
+            ->status($this->status->name)
             ->taxRate($this->taxes)
             ->name('Invoice')
             ->filename($this->serial)

@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Clusters\CRM\Resources;
 
+use App\Enums\InvoiceStatus;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource\RelationManagers;
@@ -18,6 +19,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -210,6 +212,12 @@ class QuoteResource extends Resource
                             'notes' => $record->notes,
                         ])
                         ->form([
+                            Select::make('status')
+                                ->enum(InvoiceStatus::class)
+                                ->options(InvoiceStatus::class)
+                                ->default(InvoiceStatus::DEFAULT)
+                                ->searchable()
+                                ->required(),
                             Group::make()
                                 ->columnSpanFull()
                                 ->schema([
@@ -276,6 +284,7 @@ class QuoteResource extends Resource
                                 'customer_id' => $record->customer->id,
                                 'currency_id' => $record->currency->id,
                                 'company_id' => $company->id,
+                                'status' => $data['status'],
                                 'subtotal' => str_replace(',', '', $data['subtotal']),
                                 'taxes' => $record->taxes,
                                 'total' => str_replace(',', '', $data['total']),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\InvoiceStatus;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->foreignIdFor(Currency::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Quote::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->enum('status', InvoiceStatus::values())->default(InvoiceStatus::DEFAULT);
             $table->unsignedBigInteger('subtotal');
             $table->unsignedInteger('taxes');
             $table->unsignedBigInteger('total');
