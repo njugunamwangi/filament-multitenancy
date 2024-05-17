@@ -7,6 +7,7 @@ use App\Filament\App\Clusters\Assets\Resources\EquipmentResource\Pages;
 use App\Filament\App\Clusters\Assets\Resources\EquipmentResource\RelationManagers;
 use App\Models\Brand;
 use App\Models\Equipment;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,9 +20,14 @@ class EquipmentResource extends Resource
 {
     protected static ?string $model = Equipment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     protected static ?string $cluster = Assets::class;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
+    }
 
     public static function form(Form $form): Form
     {

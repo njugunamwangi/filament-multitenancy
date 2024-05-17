@@ -6,6 +6,7 @@ use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\LeadResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\LeadResource\RelationManagers;
 use App\Models\Lead;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Actions\ActionGroup;
@@ -21,9 +22,16 @@ class LeadResource extends Resource
 {
     protected static ?string $model = Lead::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-bookmark';
 
     protected static ?string $cluster = CRM::class;
+
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
+    }
 
     public static function form(Form $form): Form
     {

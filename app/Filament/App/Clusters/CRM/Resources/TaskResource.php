@@ -49,7 +49,9 @@ class TaskResource extends Resource
 {
     protected static ?string $model = Task::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
+
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $cluster = CRM::class;
 
@@ -57,6 +59,11 @@ class TaskResource extends Resource
     {
         return $form
             ->schema(Task::getForm());
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
     }
 
     public static function infolist(Infolist $infolist): Infolist

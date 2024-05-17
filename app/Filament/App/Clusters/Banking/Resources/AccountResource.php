@@ -8,6 +8,7 @@ use App\Filament\App\Clusters\Banking;
 use App\Filament\App\Clusters\Banking\Resources\AccountResource\Pages;
 use App\Models\Account;
 use App\Models\Currency;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
@@ -28,9 +29,14 @@ class AccountResource extends Resource
 {
     protected static ?string $model = Account::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $cluster = Banking::class;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
+    }
 
     public static function form(Form $form): Form
     {

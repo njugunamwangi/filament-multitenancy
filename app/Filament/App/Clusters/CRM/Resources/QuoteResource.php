@@ -43,9 +43,16 @@ class QuoteResource extends Resource
 {
     protected static ?string $model = Quote::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
     protected static ?string $cluster = CRM::class;
+
+    protected static ?int $navigationSort = 5;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
+    }
 
     public static function form(Form $form): Form
     {
