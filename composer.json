@@ -11,6 +11,7 @@
         "awcodes/filament-curator": "^3.5",
         "brick/money": "^0.9.0",
         "filament/filament": "^3.2",
+        "flowframe/laravel-trend": "^0.2.0",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laraveldaily/laravel-invoices": "^4.0",
