@@ -18,6 +18,8 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -162,24 +164,11 @@ class AccountResource extends Resource
                 Tables\Columns\TextColumn::make('currency.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('bank_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('bank_phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('bank_website')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('bic_swift_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('iban')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('aba_routing_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('ach_routing_number')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('enabled')
+                    ->label('Default')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
@@ -198,8 +187,25 @@ class AccountResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Action::make('default')
+                        ->color('warning')
+                        ->visible(fn($record) => !$record->enabled)
+                        ->icon('heroicon-o-lock-closed')
+                        ->modalDescription(fn ($record) => 'Are you sure you want to make '.$record->name.' default?')
+                        ->modalSubmitActionLabel('Make Default')
+                        ->iconPosition('center')
+                        ->requiresConfirmation()
+                        ->action(function($record) {
+                            $company = Filament::getTenant();
+
+                            Account::where('company_id', $company->id)->where('enabled', true)->update(['enabled' => false]);
+
+                            $record->makeDefault();
+                        })
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

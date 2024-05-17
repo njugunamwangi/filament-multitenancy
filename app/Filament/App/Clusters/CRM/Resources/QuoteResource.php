@@ -29,6 +29,7 @@ use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as ActionsAction;
 use Filament\Tables\Actions\ActionGroup;
@@ -208,6 +209,7 @@ class QuoteResource extends Resource
                     ActionsAction::make('invoice')
                         ->hidden(fn($record) => $record->invoice)
                         ->color('success')
+                        ->modalWidth(MaxWidth::SixExtraLarge)
                         ->icon('heroicon-o-clipboard-document-check')
                         ->modalIcon('heroicon-o-clipboard-document-check')
                         ->modalDescription(fn($record) => 'Generate invoice for quote '. $record->serial)
@@ -258,7 +260,7 @@ class QuoteResource extends Resource
                                         ->schema([
                                             TextInput::make('subtotal')
                                                 ->readOnly()
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->prefix(fn($record) => $record->currency->abbr)
                                                 ->afterStateHydrated(function(Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
@@ -270,7 +272,7 @@ class QuoteResource extends Resource
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('total')
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->prefix(fn($record) => $record->currency->abbr)
                                                 ->readOnly(),
                                         ])->columnSpan(4)
                                 ])
