@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OwnerSeeder::class,
             CompanySeeder::class,
             CustomerSeeder::class,
+            TaskSeeder::class,
         ]);
     }
 }
