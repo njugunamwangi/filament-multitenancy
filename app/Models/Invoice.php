@@ -57,6 +57,13 @@ class Invoice extends Model
          return $this->belongsTo(Quote::class);
     }
 
+    public function markPaid()
+    {
+        $this->update(['status' => InvoiceStatus::Paid->value]);
+
+        $this->save();
+    }
+
     public function savePdf()
     {
         $company = Filament::getTenant();

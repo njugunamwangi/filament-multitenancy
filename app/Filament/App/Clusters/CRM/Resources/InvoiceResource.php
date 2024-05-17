@@ -25,8 +25,11 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action as ActionsAction;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -156,9 +159,8 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('task.id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('serial')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
@@ -168,14 +170,17 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('quote.serial')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('taxes')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(function ($state) {
+                        return $state->getColor();
+                    })
+                    ->icon(function ($state) {
+                        return $state->getIcon();
+                    }),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('serial')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('mail')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('deleted_at')
@@ -195,8 +200,26 @@ class InvoiceResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->color('info'),
+                    ActionsAction::make('paid')
+                        ->label('Mark as Paid')
+                        ->visible(fn($record) => $record->status->name === InvoiceStatus::Unpaid->value)
+                        ->icon('heroicon-o-check-badge')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn($record) => $record->markPaid())
+                        ->after(function($record) {
+                            Notification::make()
+                                ->title('Invoice Paid')
+                                ->body('Invoice ' . $record->serial . ' was marked paid')
+                                ->success()
+                                ->icon('heroicon-o-check-badge')
+                                ->send();
+                        })
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
