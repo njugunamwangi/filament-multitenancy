@@ -20,7 +20,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -50,6 +52,21 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationGroup('Content')
                     ->navigationSort(3)
                     ->navigationCountBadge(),
+                BreezyCore::make()
+                    ->avatarUploadComponent(fn($fileUpload) => $fileUpload->disableLabel())
+                    ->myProfile(
+                        shouldRegisterUserMenu: true, // Sets the 'account' link in the panel User Menu (default = true)
+                        shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
+                        hasAvatars: true, // Enables the avatar upload form component (default = false)
+                        slug: 'my-profile' // Sets the slug for the profile page (default = 'my-profile')
+                    )
+                    ->passwordUpdateRules(
+                        rules: [Password::default()->mixedCase()->uncompromised(3)], // you may pass an array of validation rules as well. (default = ['min:8'])
+                        requiresCurrentPassword: true, // when false, the user can update their password without entering their current password. (default = true)
+                        )
+                    ->enableTwoFactorAuthentication(
+                        force: false, // force the user to enable 2FA before they can use the application (default = false)
+                    )
             ])
             ->maxContentWidth(MaxWidth::Full)
             ->viteTheme('resources/css/filament/admin/theme.css')
