@@ -14,17 +14,13 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
-        $owners = ['Owner 1', 'Owner 2'];
+        $user = User::create([
+            'name' => $owner = 'Owner 1',
+            'email' => Str::slug($owner).'@drones.test',
+            'password' => bcrypt('Password'),
+            'email_verified_at' => now(),
+        ]);
 
-        foreach ($owners as $owner) {
-            $user = User::create([
-                'name' => $owner,
-                'email' => Str::slug($owner).'@drones.test',
-                'password' => bcrypt('Password'),
-                'email_verified_at' => now(),
-            ]);
-
-            $user->assignRole(Role::OWNER);
-        }
+        $user->assignRole(Role::OWNER);
     }
 }

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             OwnerSeeder::class,
             CompanySeeder::class,
+            LeadSeeder::class,
             CustomerSeeder::class,
             TaskSeeder::class,
         ]);
