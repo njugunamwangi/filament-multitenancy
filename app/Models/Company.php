@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\EntityType;
+use App\Models\Company\Lead;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +16,13 @@ class Company extends Model
     use SoftDeletes;
 
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+         return [
+             'entity_type' => EntityType::class
+         ];
+    }
 
     public function user(): BelongsTo
     {

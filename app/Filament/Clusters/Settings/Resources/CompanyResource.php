@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Settings\Resources;
 use App\Filament\Clusters\Settings;
 use App\Filament\Clusters\Settings\Resources\CompanyResource\Pages;
 use App\Models\Company;
+use Awcodes\Curator\Components\Tables\CuratorColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -53,7 +54,7 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
+                    ->label('Owner')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -72,16 +73,13 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('currency.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('logo_id')
-                    ->numeric()
+                CuratorColumn::make('logo')
+                    ->label('Logo')
+                    ->height(50)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('company_registration')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('company_kra_pin')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('entity_type'),
             ])

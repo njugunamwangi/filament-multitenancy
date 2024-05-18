@@ -6,6 +6,7 @@ use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
 use App\Mail\SendQuote;
 use App\Models\Company;
+use App\Models\Company\Lead as CompanyLead;
 use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Equipment;
@@ -69,6 +70,8 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $company = Filament::getTenant();
+
         return $form
             ->schema([
                 Section::make('Primary Information')
@@ -106,16 +109,15 @@ class CustomerResource extends Resource
                                 return Tag::create($data)->getKey();
                             }),
                         Select::make('lead_id')
-                            ->relationship('lead', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', Filament::getTenant()->id))
-                            ->searchable()
-                            ->preload()
-                            ->createOptionModalHeading('Create Lead')
-                            ->createOptionForm(Lead::getForm())
-                            ->createOptionUsing(function (array $data): int {
-                                $data['company_id'] = Filament::getTenant()->id;
+                            // ->relationship('lead', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', Filament::getTenant()->id))
+                            ->options(function() use ($company) {
+                                $leads = CompanyLead::where('company_id', $company->id)->pluck('lead_id')->toArray();
 
-                                return Lead::create($data)->getKey();
-                            }),
+                                return Lead::whereIn('id', $leads)->pluck('name', 'id');
+                            })
+                            ->label('Lead')
+                            ->searchable()
+                            ->preload(),
                     ])->columns(2),
                 Forms\Components\Section::make('Documents')
                     ->visibleOn('edit')

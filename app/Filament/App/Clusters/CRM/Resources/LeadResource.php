@@ -4,14 +4,14 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\LeadResource\Pages;
-use App\Models\Lead;
+use App\Filament\App\Clusters\CRM\Resources\LeadResource\RelationManagers;
+use App\Models\Company\Lead;
+use App\Models\Lead as ModelsLead;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup as ActionsActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -23,21 +23,29 @@ class LeadResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-bookmark';
 
     protected static ?string $cluster = CRM::class;
-
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('company_id', Filament::getTenant()->id)->count();
     }
-
     public static function form(Form $form): Form
     {
+        $company = Filament::getTenant();
+
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('lead_id')
                     ->required()
-                    ->maxLength(255),
+                    ->label('Lead')
+                    ->options(function() use ($company) {
+                        $selected = Lead::where('company_id', $company->id)->pluck('lead_id')->toArray();
+
+                        return ModelsLead::whereNotIn('id', $selected)->pluck('name', 'id');
+                    })
+                    ->createOptionForm(ModelsLead::getForm())
+                    ->createOptionModalHeading('Create Lead')
+                    ->createOptionUsing(fn (array $data): int => ModelsLead::create($data)->getKey()),
             ]);
     }
 
@@ -45,10 +53,9 @@ class LeadResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('Customers')
-                    ->getStateUsing(fn ($record) => $record->customers()->count()),
+                Tables\Columns\TextColumn::make('lead.name')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -66,12 +73,10 @@ class LeadResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                ActionsActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
-                        ->hidden(fn ($record) => $record->customers()->count() > 0),
-                ]),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()
+                ->slideOver(),
+                Tables\Actions\DeleteAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -93,9 +98,9 @@ class LeadResource extends Resource
     {
         return [
             'index' => Pages\ListLeads::route('/'),
-            'create' => Pages\CreateLead::route('/create'),
+            // 'create' => Pages\CreateLead::route('/create'),
             'view' => Pages\ViewLead::route('/{record}'),
-            'edit' => Pages\EditLead::route('/{record}/edit'),
+            // 'edit' => Pages\EditLead::route('/{record}/edit'),
         ];
     }
 
