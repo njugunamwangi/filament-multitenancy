@@ -18,19 +18,19 @@ class Lead extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function customers(): HasMany
     {
-         return $this->hasMany(Customer::class);
+        return $this->hasMany(Customer::class);
     }
 
     public static function getForm(): array
     {
-         return [
+        return [
             TextInput::make('name')
-                ->required()
-         ];
+                ->required(),
+        ];
     }
 }

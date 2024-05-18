@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Quote;
-use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
@@ -18,7 +17,7 @@ class QuotePDFController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke( Quote $quote, Request $request)
+    public function __invoke(Quote $quote, Request $request)
     {
         $customer = new Buyer([
             'name' => $quote->customer->name,
@@ -29,14 +28,14 @@ class QuotePDFController extends Controller
         ]);
 
         $bank = Account::query()
-                    ->where('company_id' ,$quote->company->id)
-                    ->where('enabled', true)
-                    ->first();
+            ->where('company_id', $quote->company->id)
+            ->where('enabled', true)
+            ->first();
 
         $seller = new Party([
-            'name'          => $quote->company->name,
-            'phone'         => $quote->company->phone,
-            'email'         => $quote->company->email,
+            'name' => $quote->company->name,
+            'phone' => $quote->company->phone,
+            'email' => $quote->company->email,
             'custom_fields' => [
                 'SWIFT' => $bank?->bic_swift_code,
                 'Bank' => $bank?->bank_name,

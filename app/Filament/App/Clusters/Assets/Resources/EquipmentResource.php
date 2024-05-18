@@ -4,11 +4,8 @@ namespace App\Filament\App\Clusters\Assets\Resources;
 
 use App\Filament\App\Clusters\Assets;
 use App\Filament\App\Clusters\Assets\Resources\EquipmentResource\Pages;
-use App\Filament\App\Clusters\Assets\Resources\EquipmentResource\RelationManagers;
-use App\Models\Brand;
 use App\Models\Equipment;
 use Filament\Facades\Filament;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;

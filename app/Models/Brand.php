@@ -17,18 +17,18 @@ class Brand extends Model
 
     public static function getForm(): array
     {
-         return [
+        return [
             TextInput::make('name')
                 ->required()
                 ->unique(ignoreRecord: true),
             TextInput::make('website_url')
                 ->required()
                 ->unique(ignoreRecord: true),
-         ];
+        ];
     }
 
     public function equipment(): HasMany
     {
-         return $this->hasMany(Equipment::class);
+        return $this->hasMany(Equipment::class);
     }
 }

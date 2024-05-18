@@ -2,7 +2,6 @@
 
 namespace App\Filament\App\Widgets;
 
-use App\Models\Role;
 use App\Models\Task;
 use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;

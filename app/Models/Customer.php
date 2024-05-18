@@ -23,43 +23,43 @@ class Customer extends Model
 
     public function tags(): BelongsToMany
     {
-         return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class);
     }
 
     public function lead(): BelongsTo
     {
-         return $this->belongsTo(Lead::class);
+        return $this->belongsTo(Lead::class);
     }
 
     public function documents(): HasMany
     {
-         return $this->hasMany(Document::class);
+        return $this->hasMany(Document::class);
     }
 
     public function tasks(): HasMany
     {
-         return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class);
     }
 
     public function completeTasks(): HasMany
     {
         return $this->hasMany(Task::class)
-                        ->where('is_completed', true);
+            ->where('is_completed', true);
     }
 
     public function incompleteTasks(): HasMany
     {
         return $this->hasMany(Task::class)
-                        ->where('is_completed', false);
+            ->where('is_completed', false);
     }
 
     public function quotes(): HasMany
     {
-         return $this->hasMany(Quote::class);
+        return $this->hasMany(Quote::class);
     }
 
     public function invoices(): HasMany
     {
-         return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class);
     }
 }

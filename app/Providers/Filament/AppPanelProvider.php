@@ -60,7 +60,7 @@ class AppPanelProvider extends PanelProvider
                     ->navigationSort(3)
                     ->navigationCountBadge(),
                 BreezyCore::make()
-                    ->avatarUploadComponent(fn($fileUpload) => $fileUpload->disableLabel())
+                    ->avatarUploadComponent(fn ($fileUpload) => $fileUpload->disableLabel())
                     ->myProfile(
                         shouldRegisterUserMenu: true,
                         shouldRegisterNavigation: false,
@@ -70,10 +70,10 @@ class AppPanelProvider extends PanelProvider
                     ->passwordUpdateRules(
                         rules: [Password::default()->mixedCase()->uncompromised(3)],
                         requiresCurrentPassword: true,
-                        )
+                    )
                     ->enableTwoFactorAuthentication(
                         force: false,
-                    )
+                    ),
             ])
             ->viteTheme('resources/css/filament/app/theme.css')
             ->maxContentWidth(MaxWidth::Full)

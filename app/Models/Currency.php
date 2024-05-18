@@ -19,16 +19,16 @@ class Currency extends Model
 
     public function expenses(): HasMany
     {
-         return $this->hasMany(Expense::class);
+        return $this->hasMany(Expense::class);
     }
 
     public function quotes(): HasMany
     {
-         return $this->hasMany(Quote::class);
+        return $this->hasMany(Quote::class);
     }
 
     public function invoices(): HasMany
     {
-         return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class);
     }
 }

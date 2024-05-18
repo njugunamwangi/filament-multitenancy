@@ -4,12 +4,10 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\LeadResource\Pages;
-use App\Filament\App\Clusters\CRM\Resources\LeadResource\RelationManagers;
 use App\Models\Lead;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Pages\Actions\ActionGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup as ActionsActionGroup;
@@ -50,7 +48,7 @@ class LeadResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('Customers')
-                    ->getStateUsing(fn($record)=> $record->customers()->count()),
+                    ->getStateUsing(fn ($record) => $record->customers()->count()),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -72,8 +70,8 @@ class LeadResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
-                        ->hidden(fn($record) => $record->customers()->count() > 0),
-                ])
+                        ->hidden(fn ($record) => $record->customers()->count() > 0),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

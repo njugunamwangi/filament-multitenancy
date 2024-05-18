@@ -4,9 +4,7 @@ namespace App\Filament\App\Clusters\CRM\Resources\InvoiceResource\Pages;
 
 use App\Filament\App\Clusters\CRM\Resources\InvoiceResource;
 use App\Mail\SendInvoice;
-use App\Mail\SendQuote;
 use App\Models\Invoice;
-use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -45,7 +43,7 @@ class CreateInvoice extends CreateRecord
                 ->success()
                 ->icon('heroicon-o-bolt')
                 ->title('Invoice mailed')
-                ->body('Invoice mailed to ' . $invoice->customer->name)
+                ->body('Invoice mailed to '.$invoice->customer->name)
                 ->send();
         }
     }

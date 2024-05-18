@@ -5,7 +5,6 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 use App\Enums\InvoiceStatus;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\Pages;
-use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\RelationManagers;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
@@ -65,27 +64,27 @@ class InvoiceResource extends Resource
                                     ->required()
                                     ->live(),
                                 Forms\Components\Select::make('task_id')
-                                    ->visible(fn(Get $get) => $get('customer_id'))
+                                    ->visible(fn (Get $get) => $get('customer_id'))
                                     ->live()
-                                    ->relationship('task', 'id' , modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('invoice')),
+                                    ->relationship('task', 'id', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('invoice')),
                             ]),
-                            Grid::make(2)
-                                ->schema([
-                                    Forms\Components\Select::make('currency_id')
-                                        ->relationship('currency', 'abbr')
-                                        ->default(Company::find($company_id)->currency_id)
-                                        ->searchable()
-                                        ->preload()
-                                        ->optionsLimit(100)
-                                        ->live()
-                                        ->required(),
-                                    Select::make('status')
-                                        ->enum(InvoiceStatus::class)
-                                        ->options(InvoiceStatus::class)
-                                        ->default(InvoiceStatus::DEFAULT)
-                                        ->searchable()
-                                        ->required()
-                                ])
+                        Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('currency_id')
+                                    ->relationship('currency', 'abbr')
+                                    ->default(Company::find($company_id)->currency_id)
+                                    ->searchable()
+                                    ->preload()
+                                    ->optionsLimit(100)
+                                    ->live()
+                                    ->required(),
+                                Select::make('status')
+                                    ->enum(InvoiceStatus::class)
+                                    ->options(InvoiceStatus::class)
+                                    ->default(InvoiceStatus::DEFAULT)
+                                    ->searchable()
+                                    ->required(),
+                            ]),
                     ]),
                 Group::make()
                     ->columnSpanFull()
@@ -109,32 +108,32 @@ class InvoiceResource extends Resource
                                     ->addActionLabel('Add Item')
                                     ->columns(3)
                                     ->live()
-                                    ->afterStateUpdated(function(Get $get, Set $set) {
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     })
                                     ->deleteAction(
-                                        fn(Action $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                    )
+                                        fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                    ),
                             ])->columnSpan(8),
                         Group::make()
                             ->schema([
                                 TextInput::make('subtotal')
                                     ->readOnly()
-                                    ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                    ->afterStateHydrated(function(Get $get, Set $set) {
+                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                    ->afterStateHydrated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     }),
                                 TextInput::make('taxes')
                                     ->suffix('%')
                                     ->numeric()
                                     ->default(20)
-                                    ->afterStateUpdated(function(Get $get, Set $set) {
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     }),
                                 TextInput::make('total')
-                                    ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                     ->readOnly(),
-                            ])->columnSpan(4)
+                            ])->columnSpan(4),
                     ])
                     ->columns(12),
                 RichEditor::make('notes')
@@ -152,7 +151,7 @@ class InvoiceResource extends Resource
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;
@@ -172,7 +171,7 @@ class InvoiceResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.abbr')
-                    ->description(fn($record) => $record->currency->name)
+                    ->description(fn ($record) => $record->currency->name)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quote.serial')
                     ->numeric()
@@ -213,20 +212,20 @@ class InvoiceResource extends Resource
                         ->color('info'),
                     ActionsAction::make('paid')
                         ->label('Mark as Paid')
-                        ->visible(fn($record) => $record->status->name === InvoiceStatus::Unpaid->value)
+                        ->visible(fn ($record) => $record->status->name === InvoiceStatus::Unpaid->value)
                         ->icon('heroicon-o-check-badge')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(fn($record) => $record->markPaid())
-                        ->after(function($record) {
+                        ->action(fn ($record) => $record->markPaid())
+                        ->after(function ($record) {
                             Notification::make()
                                 ->title('Invoice Paid')
-                                ->body('Invoice ' . $record->serial . ' was marked paid')
+                                ->body('Invoice '.$record->serial.' was marked paid')
                                 ->success()
                                 ->icon('heroicon-o-check-badge')
                                 ->send();
-                        })
-                ])
+                        }),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -244,9 +243,9 @@ class InvoiceResource extends Resource
                 ViewEntry::make('quote')
                     ->columnSpanFull()
                     ->viewData([
-                        'record' => $infolist->record
+                        'record' => $infolist->record,
                     ])
-                    ->view('infolists.components.invoice-view')
+                    ->view('infolists.components.invoice-view'),
             ]);
     }
 

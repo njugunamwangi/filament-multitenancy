@@ -5,7 +5,6 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 use App\Enums\InvoiceStatus;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
-use App\Filament\App\Clusters\CRM\Resources\QuoteResource\RelationManagers;
 use App\Mail\SendInvoice;
 use App\Models\Company;
 use App\Models\Currency;
@@ -70,18 +69,18 @@ class QuoteResource extends Resource
                                     ->required()
                                     ->live(),
                                 Forms\Components\Select::make('task_id')
-                                    ->visible(fn(Get $get) => $get('customer_id'))
+                                    ->visible(fn (Get $get) => $get('customer_id'))
                                     ->live()
-                                    ->relationship('task', 'id' , modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('quote')),
+                                    ->relationship('task', 'id', modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $company_id)->where('customer_id', $get('customer_id'))->whereDoesntHave('quote')),
                             ]),
-                            Forms\Components\Select::make('currency_id')
-                                ->relationship('currency', 'abbr')
-                                ->default(Company::find($company_id)->currency_id)
-                                ->searchable()
-                                ->preload()
-                                ->optionsLimit(100)
-                                ->live()
-                                ->required(),
+                        Forms\Components\Select::make('currency_id')
+                            ->relationship('currency', 'abbr')
+                            ->default(Company::find($company_id)->currency_id)
+                            ->searchable()
+                            ->preload()
+                            ->optionsLimit(100)
+                            ->live()
+                            ->required(),
                     ]),
                 Group::make()
                     ->columnSpanFull()
@@ -105,32 +104,32 @@ class QuoteResource extends Resource
                                     ->addActionLabel('Add Item')
                                     ->columns(3)
                                     ->live()
-                                    ->afterStateUpdated(function(Get $get, Set $set) {
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     })
                                     ->deleteAction(
-                                        fn(Action $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                    )
+                                        fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                    ),
                             ])->columnSpan(8),
                         Group::make()
                             ->schema([
                                 TextInput::make('subtotal')
                                     ->readOnly()
-                                    ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                    ->afterStateHydrated(function(Get $get, Set $set) {
+                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                    ->afterStateHydrated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     }),
                                 TextInput::make('taxes')
                                     ->suffix('%')
                                     ->numeric()
                                     ->default(20)
-                                    ->afterStateUpdated(function(Get $get, Set $set) {
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
                                         self::updatedTotals($get, $set);
                                     }),
                                 TextInput::make('total')
-                                    ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                     ->readOnly(),
-                            ])->columnSpan(4)
+                            ])->columnSpan(4),
                     ])
                     ->columns(12),
                 RichEditor::make('notes')
@@ -148,7 +147,7 @@ class QuoteResource extends Resource
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;
@@ -163,13 +162,13 @@ class QuoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('task.id')
-                    ->getStateUsing(fn($record) => $record->task ? '#'.$record->task->id : '')
+                    ->getStateUsing(fn ($record) => $record->task ? '#'.$record->task->id : '')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.abbr')
-                    ->description(fn($record) => $record->currency->name)
+                    ->description(fn ($record) => $record->currency->name)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxes')
                     ->numeric()
@@ -207,15 +206,15 @@ class QuoteResource extends Resource
                     Tables\Actions\EditAction::make()
                         ->color('info'),
                     ActionsAction::make('invoice')
-                        ->hidden(fn($record) => $record->invoice)
+                        ->hidden(fn ($record) => $record->invoice)
                         ->color('success')
                         ->modalWidth(MaxWidth::SixExtraLarge)
                         ->icon('heroicon-o-clipboard-document-check')
                         ->modalIcon('heroicon-o-clipboard-document-check')
-                        ->modalDescription(fn($record) => 'Generate invoice for quote '. $record->serial)
+                        ->modalDescription(fn ($record) => 'Generate invoice for quote '.$record->serial)
                         ->modalSubmitActionLabel('Generate Invoice')
                         ->label('Generate Invoice')
-                        ->fillForm(fn($record): array => [
+                        ->fillForm(fn ($record): array => [
                             'items' => $record->items,
                             'taxes' => $record->taxes,
                             'notes' => $record->notes,
@@ -249,32 +248,32 @@ class QuoteResource extends Resource
                                                 ->addActionLabel('Add Item')
                                                 ->columns(3)
                                                 ->live()
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 })
                                                 ->deleteAction(
-                                                    fn(Action $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                                )
+                                                    fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                ),
                                         ])->columnSpan(8),
                                     Group::make()
                                         ->schema([
                                             TextInput::make('subtotal')
                                                 ->readOnly()
-                                                ->prefix(fn($record) => $record->currency->abbr)
-                                                ->afterStateHydrated(function(Get $get, Set $set) {
+                                                ->prefix(fn ($record) => $record->currency->abbr)
+                                                ->afterStateHydrated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('taxes')
                                                 ->suffix('%')
                                                 ->numeric()
                                                 ->default(20)
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('total')
-                                                ->prefix(fn($record) => $record->currency->abbr)
+                                                ->prefix(fn ($record) => $record->currency->abbr)
                                                 ->readOnly(),
-                                        ])->columnSpan(4)
+                                        ])->columnSpan(4),
                                 ])
                                 ->columns(12),
                             RichEditor::make('notes')
@@ -282,9 +281,9 @@ class QuoteResource extends Resource
                                 ->required(),
                             ToggleButton::make('mail')
                                 ->default(true)
-                                ->label('Send Email to Customer?')
+                                ->label('Send Email to Customer?'),
                         ])
-                        ->action(function($record, array $data) {
+                        ->action(function ($record, array $data) {
                             $company = Filament::getTenant();
                             $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
 
@@ -301,7 +300,7 @@ class QuoteResource extends Resource
                                 'serial' => $series.'-'.str_pad($serial_number, 5, '0', STR_PAD_LEFT),
                                 'items' => $record->items,
                                 'notes' => $data['notes'],
-                                'mail' => $data['mail']
+                                'mail' => $data['mail'],
                             ]);
 
                             if ($invoice->mail) {
@@ -314,11 +313,11 @@ class QuoteResource extends Resource
                                     ->success()
                                     ->icon('heroicon-o-bolt')
                                     ->title('Invoice mailed')
-                                    ->body('Invoice mailed to ' . $invoice->customer->name)
+                                    ->body('Invoice mailed to '.$invoice->customer->name)
                                     ->send();
                             }
-                        })
-                ])
+                        }),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -336,9 +335,9 @@ class QuoteResource extends Resource
                 ViewEntry::make('quote')
                     ->columnSpanFull()
                     ->viewData([
-                        'record' => $infolist->record
+                        'record' => $infolist->record,
                     ])
-                    ->view('infolists.components.quote-view')
+                    ->view('infolists.components.quote-view'),
             ]);
     }
 

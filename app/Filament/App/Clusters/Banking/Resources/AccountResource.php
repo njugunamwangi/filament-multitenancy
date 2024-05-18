@@ -192,20 +192,20 @@ class AccountResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Action::make('default')
                         ->color('warning')
-                        ->visible(fn($record) => !$record->enabled)
+                        ->visible(fn ($record) => ! $record->enabled)
                         ->icon('heroicon-o-lock-closed')
                         ->modalDescription(fn ($record) => 'Are you sure you want to make '.$record->name.' default?')
                         ->modalSubmitActionLabel('Make Default')
                         ->iconPosition('center')
                         ->requiresConfirmation()
-                        ->action(function($record) {
+                        ->action(function ($record) {
                             $company = Filament::getTenant();
 
                             Account::where('company_id', $company->id)->where('enabled', true)->update(['enabled' => false]);
 
                             $record->makeDefault();
-                        })
-                ])
+                        }),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

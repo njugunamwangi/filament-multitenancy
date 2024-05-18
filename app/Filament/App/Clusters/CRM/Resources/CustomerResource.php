@@ -5,7 +5,6 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\CustomerResource\Pages;
 use App\Mail\SendQuote;
-use App\Models\Brand;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -13,7 +12,6 @@ use App\Models\Equipment;
 use App\Models\Lead;
 use App\Models\Quote;
 use App\Models\Tag;
-use App\Models\Task;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action as ComponentsActionsAction;
@@ -44,11 +42,8 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use LasseRafn\Initials\Initials;
@@ -136,8 +131,8 @@ class CustomerResource extends Resource
                                 Forms\Components\Textarea::make('comments')
                                     ->required(),
                             ])
-                            ->columns()
-                    ])
+                            ->columns(),
+                    ]),
             ]);
     }
 
@@ -170,9 +165,9 @@ class CustomerResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make()
-                        ->hidden(fn($record) => $record->trashed()),
+                        ->hidden(fn ($record) => $record->trashed()),
                     Tables\Actions\EditAction::make()
-                        ->hidden(fn($record) => $record->trashed())
+                        ->hidden(fn ($record) => $record->trashed())
                         ->slideOver(),
                     Tables\Actions\DeleteAction::make(),
                     RestoreAction::make()
@@ -196,13 +191,13 @@ class CustomerResource extends Resource
                                 ]),
                             Select::make('equipment')
                                 ->live()
-                                ->visible(fn(Get $get) => $get('requires_equipment'))
+                                ->visible(fn (Get $get) => $get('requires_equipment'))
                                 ->requiredWith('requires_equipment')
                                 ->multiple()
-                                ->options(fn() => Equipment::query()->where('company_id', Filament::getTenant()->id)->get()->pluck('registration', 'id'))
+                                ->options(fn () => Equipment::query()->where('company_id', Filament::getTenant()->id)->get()->pluck('registration', 'id'))
                                 ->preload(),
                         ])
-                        ->action(function(array $data, $record) {
+                        ->action(function (array $data, $record) {
                             $data['company_id'] = Filament::getTenant()->id;
 
                             $task = $record->tasks()->create([
@@ -213,7 +208,7 @@ class CustomerResource extends Resource
                                 'description' => $data['description'],
                             ]);
 
-                            if($data['requires_equipment'] && !empty($data['equipment'])) {
+                            if ($data['requires_equipment'] && ! empty($data['equipment'])) {
                                 $task->equipment()->attach($data['equipment']);
                             }
 
@@ -261,32 +256,32 @@ class CustomerResource extends Resource
                                                 ->addActionLabel('Add Item')
                                                 ->columns(3)
                                                 ->live()
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 })
                                                 ->deleteAction(
-                                                    fn(ComponentsActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                                )
+                                                    fn (ComponentsActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                ),
                                         ])->columnSpan(8),
                                     Group::make()
                                         ->schema([
                                             TextInput::make('subtotal')
                                                 ->readOnly()
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                                ->afterStateHydrated(function(Get $get, Set $set) {
+                                                ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->afterStateHydrated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('taxes')
                                                 ->suffix('%')
                                                 ->numeric()
                                                 ->default(20)
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('total')
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                                 ->readOnly(),
-                                        ])->columnSpan(4)
+                                        ])->columnSpan(4),
                                 ])
                                 ->columns(12),
                             RichEditor::make('notes')
@@ -296,7 +291,7 @@ class CustomerResource extends Resource
                                 ->label('Send Email?')
                                 ->default('true'),
                         ])
-                        ->action(function($record, array $data) {
+                        ->action(function ($record, array $data) {
                             $company = Filament::getTenant();
 
                             $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
@@ -324,13 +319,13 @@ class CustomerResource extends Resource
                                     ->warning()
                                     ->icon('heroicon-o-bolt')
                                     ->title('Quote mailed')
-                                    ->body('Quote mailed to ' . $quote->customer->name)
+                                    ->body('Quote mailed to '.$quote->customer->name)
                                     ->send();
                             }
-                        })
-                ])
+                        }),
+                ]),
             ])
-            ->recordUrl(fn($record) => $record->trashed() ? null : Pages\ViewCustomer::getUrl([$record->id]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : Pages\ViewCustomer::getUrl([$record->id]))
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -346,7 +341,7 @@ class CustomerResource extends Resource
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;
@@ -384,75 +379,75 @@ class CustomerResource extends Resource
                         TextEntry::make('description')
                             ->columnSpanFull(),
                         TextEntry::make('lead.name'),
-                        TextEntry::make('tags.name')
+                        TextEntry::make('tags.name'),
                     ])->columns(2),
                 ComponentsSection::make('Documents')
-                    ->hidden(fn($record) => $record->documents->isEmpty())
+                    ->hidden(fn ($record) => $record->documents->isEmpty())
                     ->schema([
                         RepeatableEntry::make('documents')
                             ->hiddenLabel()
                             ->schema([
                                 TextEntry::make('file_path')
                                     ->label('Document')
-                                    ->formatStateUsing(fn() => "Download Document")
-                                    ->url(fn($record) => Storage::url($record->file_path), true)
+                                    ->formatStateUsing(fn () => 'Download Document')
+                                    ->url(fn ($record) => Storage::url($record->file_path), true)
                                     ->badge()
                                     ->color(Color::Blue),
                                 TextEntry::make('comments'),
                             ])
-                            ->columns()
+                            ->columns(),
                     ]),
                 ComponentsSection::make('Tasks')
-                    ->visible(fn($record) => $record->tasks()->count() > 0)
+                    ->visible(fn ($record) => $record->tasks()->count() > 0)
                     ->schema([
                         Tabs::make()
                             ->tabs([
                                 Tabs\Tab::make('Complete Tasks')
                                     ->hiddenLabel()
-                                    ->badge(fn($record) => $record->completeTasks()->count())
+                                    ->badge(fn ($record) => $record->completeTasks()->count())
                                     ->schema([
                                         RepeatableEntry::make('completeTasks')
                                             ->schema([
                                                 TextEntry::make('task')
-                                                    ->getStateUsing(fn($record) => '#'.$record->id),
+                                                    ->getStateUsing(fn ($record) => '#'.$record->id),
                                                 TextEntry::make('due_date')
-                                                    ->date()
+                                                    ->date(),
                                             ])
-                                            ->columns()
+                                            ->columns(),
                                     ]),
                                 Tabs\Tab::make('Incomplete Tasks')
                                     ->hiddenLabel()
-                                    ->badge(fn($record) => $record->incompleteTasks()->count())
+                                    ->badge(fn ($record) => $record->incompleteTasks()->count())
                                     ->schema([
                                         RepeatableEntry::make('incompleteTasks')
                                             ->schema([
                                                 TextEntry::make('task')
-                                                    ->getStateUsing(fn($record) => '#'.$record->id),
+                                                    ->getStateUsing(fn ($record) => '#'.$record->id),
                                                 TextEntry::make('due_date')
                                                     ->date()
                                                     ->suffixAction(
                                                         ActionsAction::make('completed')
-                                                            ->visible(fn($record) => !$record->is_completed)
+                                                            ->visible(fn ($record) => ! $record->is_completed)
                                                             ->label('Mark as completed')
                                                             ->requiresConfirmation()
                                                             ->color('success')
                                                             ->button()
                                                             ->icon('heroicon-o-check-badge')
-                                                            ->action(function($record) {
+                                                            ->action(function ($record) {
                                                                 $record->completed();
 
                                                                 Notification::make()
                                                                     ->title('Task Completed')
-                                                                    ->body('You marked task #' .$record->id. ' as completed')
+                                                                    ->body('You marked task #'.$record->id.' as completed')
                                                                     ->success()
                                                                     ->send();
                                                             })
-                                                    )
+                                                    ),
                                             ])
-                                            ->columns()
+                                            ->columns(),
                                     ]),
-                            ])
-                    ])
+                            ]),
+                    ]),
             ]);
     }
 

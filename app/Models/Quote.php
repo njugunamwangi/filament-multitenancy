@@ -24,36 +24,36 @@ class Quote extends Model
 
     protected function casts(): array
     {
-         return [
-             'subtotal' => Money::class,
-             'total' => Money::class,
-             'items' => 'json'
-         ];
+        return [
+            'subtotal' => Money::class,
+            'total' => Money::class,
+            'items' => 'json',
+        ];
     }
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function customer(): BelongsTo
     {
-         return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function currency(): BelongsTo
     {
-         return $this->belongsTo(Currency::class);
+        return $this->belongsTo(Currency::class);
     }
 
     public function task(): BelongsTo
     {
-         return $this->belongsTo(Task::class);
+        return $this->belongsTo(Task::class);
     }
 
     public function invoice(): HasOne
     {
-         return $this->hasOne(Invoice::class);
+        return $this->hasOne(Invoice::class);
     }
 
     public function savePdf()
@@ -69,14 +69,14 @@ class Quote extends Model
         ]);
 
         $bank = Account::query()
-                    ->where('company_id' ,$company->id)
-                    ->where('enabled', true)
-                    ->first();
+            ->where('company_id', $company->id)
+            ->where('enabled', true)
+            ->first();
 
         $seller = new Party([
-            'name'          => $company->name,
-            'phone'         => $company->phone,
-            'email'         => $company->email,
+            'name' => $company->name,
+            'phone' => $company->phone,
+            'email' => $company->email,
             'custom_fields' => [
                 'SWIFT' => $bank?->bic_swift_code,
                 'Bank' => $bank?->bank_name,

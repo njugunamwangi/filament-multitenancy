@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasTenants, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenants
 {
     use HasFactory;
     use HasRoles;
@@ -91,6 +91,6 @@ class User extends Authenticatable implements FilamentUser, HasTenants, HasAvata
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name=' . $this->name ;
+        return $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name='.$this->name;
     }
 }

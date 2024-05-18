@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Company;
 use App\Models\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

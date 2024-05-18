@@ -3,9 +3,7 @@
 namespace App\Filament\Pages\Tenancy;
 
 use App\Enums\EntityType;
-use App\Models\Company;
 use Awcodes\Curator\Components\Forms\CuratorPicker;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\RichEditor;
@@ -77,7 +75,7 @@ class EditCompanyProfile extends EditTenantProfile
                                             ->default(EntityType::DEFAULT),
                                     ]),
                                 RichEditor::make('address')
-                                    ->columnSpanFull()
+                                    ->columnSpanFull(),
                             ]),
                     ]),
             ]);

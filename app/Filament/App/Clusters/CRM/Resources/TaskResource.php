@@ -4,17 +4,13 @@ namespace App\Filament\App\Clusters\CRM\Resources;
 
 use App\Filament\App\Clusters\CRM;
 use App\Filament\App\Clusters\CRM\Resources\TaskResource\Pages;
-use App\Filament\App\Clusters\CRM\Resources\TaskResource\RelationManagers;
-use App\Filament\Resources\UserResource;
 use App\Mail\SendQuote;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\Equipment;
 use App\Models\Expense;
 use App\Models\Quote;
 use App\Models\Task;
 use Filament\Facades\Filament;
-use Filament\Forms;
 use Filament\Forms\Components\Actions\Action as ComponentsActionsAction;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Repeater;
@@ -73,18 +69,18 @@ class TaskResource extends Resource
                 Section::make('Task Information')
                     ->headerActions([
                         Action::make('completed')
-                            ->visible(fn($record) => !$record->is_completed)
+                            ->visible(fn ($record) => ! $record->is_completed)
                             ->label('Mark as completed')
                             ->requiresConfirmation()
-                            ->action(function($record) {
+                            ->action(function ($record) {
                                 $record->completed();
 
                                 Notification::make()
                                     ->title('Task Completed')
-                                    ->body('You marked task #' .$record->id. ' as completed')
+                                    ->body('You marked task #'.$record->id.' as completed')
                                     ->success()
                                     ->send();
-                            })
+                            }),
                     ])
                     ->schema([
                         TextEntry::make('customer.name'),
@@ -98,7 +94,7 @@ class TaskResource extends Resource
                     ])
                     ->columns(3),
                 Section::make('Equipment')
-                    ->visible(fn($record) => $record->equipment)
+                    ->visible(fn ($record) => $record->equipment)
                     ->schema([
                         RepeatableEntry::make('equipment')
                             ->hiddenLabel()
@@ -106,8 +102,8 @@ class TaskResource extends Resource
                                 TextEntry::make('registration'),
                                 TextEntry::make('brand.name'),
                             ])
-                            ->columns(2)
-                    ])
+                            ->columns(2),
+                    ]),
             ]);
     }
 
@@ -116,7 +112,7 @@ class TaskResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->customer_id]))
+                    ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->customer_id]))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
@@ -147,22 +143,22 @@ class TaskResource extends Resource
                     ActionsAction::make('complete')
                         ->icon('heroicon-o-check-badge')
                         ->label('Mark as completed')
-                        ->visible(fn($record) => !$record->is_completed)
+                        ->visible(fn ($record) => ! $record->is_completed)
                         ->requiresConfirmation()
                         ->color('success')
-                        ->modalDescription(fn($record) => 'Mark task #'.$record->id.' as completed')
-                        ->action(function($record){
+                        ->modalDescription(fn ($record) => 'Mark task #'.$record->id.' as completed')
+                        ->action(function ($record) {
                             $record->completed();
 
                             Notification::make()
                                 ->title('Task Completed')
-                                ->body('You marked task #' .$record->id. ' as completed')
+                                ->body('You marked task #'.$record->id.' as completed')
                                 ->success()
                                 ->send();
                         }),
                     ActionsAction::make('expenses')
                         ->label('Track Expenses')
-                        ->modalDescription(fn($record) => 'Expenses for task #'.$record->id)
+                        ->modalDescription(fn ($record) => 'Expenses for task #'.$record->id)
                         ->stickyModalFooter()
                         ->stickyModalHeader()
                         ->icon('heroicon-o-arrow-trending-up')
@@ -180,7 +176,7 @@ class TaskResource extends Resource
                             'misc' => $record->expense?->misc,
                         ])
                         ->form(Expense::getForm())
-                        ->action(function($record, array $data) {
+                        ->action(function ($record, array $data) {
                             if ($record->expense) {
                                 $record->expense()->update([
                                     'company_id' => Filament::getTenant()->id,
@@ -228,7 +224,7 @@ class TaskResource extends Resource
                         }),
                     ActionsAction::make('quote')
                         ->label('Generate Quote')
-                        ->hidden(fn($record) => $record->quote)
+                        ->hidden(fn ($record) => $record->quote)
                         ->icon('heroicon-o-document-check')
                         ->color('warning')
                         ->modalWidth(MaxWidth::SixExtraLarge)
@@ -267,39 +263,39 @@ class TaskResource extends Resource
                                                 ->addActionLabel('Add Item')
                                                 ->columns(3)
                                                 ->live()
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 })
                                                 ->deleteAction(
-                                                    fn(ComponentsActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                                )
+                                                    fn (ComponentsActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                ),
                                         ])->columnSpan(8),
                                     Group::make()
                                         ->schema([
                                             TextInput::make('subtotal')
                                                 ->readOnly()
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                                ->afterStateHydrated(function(Get $get, Set $set) {
+                                                ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->afterStateHydrated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('taxes')
                                                 ->suffix('%')
                                                 ->numeric()
                                                 ->default(20)
-                                                ->afterStateUpdated(function(Get $get, Set $set) {
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
                                                     self::updatedTotals($get, $set);
                                                 }),
                                             TextInput::make('total')
-                                                ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                                ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                                 ->readOnly(),
-                                        ])->columnSpan(4)
+                                        ])->columnSpan(4),
                                 ])
                                 ->columns(12),
                             RichEditor::make('notes')
                                 ->required()
                                 ->columnSpanFull(),
                         ])
-                        ->action(function($record, array $data) {
+                        ->action(function ($record, array $data) {
                             $company = Filament::getTenant();
 
                             $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
@@ -329,11 +325,11 @@ class TaskResource extends Resource
                                     ->warning()
                                     ->icon('heroicon-o-bolt')
                                     ->title('Quote mailed')
-                                    ->body('Quote mailed to ' . $quote->customer->name)
+                                    ->body('Quote mailed to '.$quote->customer->name)
                                     ->send();
                             }
-                        })
-                ])
+                        }),
+                ]),
 
             ])
             ->bulkActions([
@@ -351,7 +347,7 @@ class TaskResource extends Resource
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;

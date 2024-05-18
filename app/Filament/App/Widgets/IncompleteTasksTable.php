@@ -26,7 +26,7 @@ class IncompleteTasksTable extends BaseWidget
             ->defaultPaginationPageOption(5)
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->customer_id]))
+                    ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->customer_id]))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()

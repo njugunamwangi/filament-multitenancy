@@ -5,12 +5,10 @@ namespace App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource;
 use App\Mail\SendQuote;
 use App\Models\Quote;
-use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use LasseRafn\Initials\Initials;
 
 class CreateQuote extends CreateRecord
@@ -44,7 +42,7 @@ class CreateQuote extends CreateRecord
                 ->warning()
                 ->icon('heroicon-o-bolt')
                 ->title('Quote mailed')
-                ->body('Quote mailed to ' . $quote->customer->name)
+                ->body('Quote mailed to '.$quote->customer->name)
                 ->send();
         }
     }

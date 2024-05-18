@@ -28,14 +28,14 @@ class InvoicePDFController extends Controller
         ]);
 
         $bank = Account::query()
-                    ->where('company_id' ,$invoice->company->id)
-                    ->where('enabled', true)
-                    ->first();
+            ->where('company_id', $invoice->company->id)
+            ->where('enabled', true)
+            ->first();
 
         $seller = new Party([
-            'name'          => $invoice->company->name,
-            'phone'         => $invoice->company->phone,
-            'email'         => $invoice->company->email,
+            'name' => $invoice->company->name,
+            'phone' => $invoice->company->phone,
+            'email' => $invoice->company->email,
             'custom_fields' => [
                 'SWIFT' => $bank?->bic_swift_code,
                 'Bank' => $bank?->bank_name,

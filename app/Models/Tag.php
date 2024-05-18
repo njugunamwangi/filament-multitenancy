@@ -19,20 +19,20 @@ class Tag extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function customers(): BelongsToMany
     {
-         return $this->belongsToMany(Customer::class);
+        return $this->belongsToMany(Customer::class);
     }
 
     public static function getForm(): array
     {
         return [
             TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                ->required()
+                ->maxLength(255),
             ColorPicker::make('color')
                 ->required(),
         ];

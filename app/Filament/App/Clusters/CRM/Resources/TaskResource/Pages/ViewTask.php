@@ -13,15 +13,10 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Actions\Action as ActionsAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
@@ -64,7 +59,7 @@ class ViewTask extends ViewRecord
                         'misc' => $record->expense?->misc,
                     ])
                     ->form(Expense::getForm())
-                    ->action(function($record, array $data) {
+                    ->action(function ($record, array $data) {
                         if ($record->expense) {
                             $record->expense()->update([
                                 'company_id' => Filament::getTenant()->id,
@@ -112,7 +107,7 @@ class ViewTask extends ViewRecord
                     }),
                 Action::make('quote')
                     ->label('Generate Quote')
-                    ->hidden(fn($record) => $record->quote)
+                    ->hidden(fn ($record) => $record->quote)
                     ->icon('heroicon-o-document-check')
                     ->color('warning')
                     ->modalWidth(MaxWidth::SixExtraLarge)
@@ -151,39 +146,39 @@ class ViewTask extends ViewRecord
                                             ->addActionLabel('Add Item')
                                             ->columns(3)
                                             ->live()
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             })
                                             ->deleteAction(
-                                                fn(ActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                            )
+                                                fn (ActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                            ),
                                     ])->columnSpan(8),
                                 Group::make()
                                     ->schema([
                                         TextInput::make('subtotal')
                                             ->readOnly()
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                            ->afterStateHydrated(function(Get $get, Set $set) {
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('taxes')
                                             ->suffix('%')
                                             ->numeric()
                                             ->default(20)
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('total')
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                             ->readOnly(),
-                                    ])->columnSpan(4)
+                                    ])->columnSpan(4),
                             ])
                             ->columns(12),
                         RichEditor::make('notes')
                             ->required()
                             ->columnSpanFull(),
                     ])
-                    ->action(function($record, array $data) {
+                    ->action(function ($record, array $data) {
                         $company = Filament::getTenant();
 
                         $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
@@ -213,11 +208,11 @@ class ViewTask extends ViewRecord
                                 ->warning()
                                 ->icon('heroicon-o-bolt')
                                 ->title('Quote mailed')
-                                ->body('Quote mailed to ' . $quote->customer->name)
+                                ->body('Quote mailed to '.$quote->customer->name)
                                 ->send();
                         }
-                    })
-            ])
+                    }),
+            ]),
         ];
     }
 
@@ -227,7 +222,7 @@ class ViewTask extends ViewRecord
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;

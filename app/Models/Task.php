@@ -25,46 +25,46 @@ class Task extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function expense(): HasOne
     {
-         return $this->hasOne(Expense::class);
+        return $this->hasOne(Expense::class);
     }
 
     public function customer(): BelongsTo
     {
-         return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function equipment(): BelongsToMany
     {
-         return $this->belongsToMany(Equipment::class);
+        return $this->belongsToMany(Equipment::class);
     }
 
     public function quote(): HasOne
     {
-         return $this->hasOne(Quote::class);
+        return $this->hasOne(Quote::class);
     }
 
     public function invoice(): HasOne
     {
-         return $this->hasOne(Invoice::class);
+        return $this->hasOne(Invoice::class);
     }
 
     public function completed()
     {
-         $this->update(['is_completed' => true]);
+        $this->update(['is_completed' => true]);
 
-         $this->save();
+        $this->save();
     }
 
     public static function getForm(): array
     {
         $company_id = Filament::getTenant()->id;
 
-         return [
+        return [
             Select::make('customer_id')
                 ->relationship('customer', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', $company_id))
                 ->searchable()
@@ -81,7 +81,7 @@ class Task extends Model
                 ->label('Completed?'),
             Select::make('equipment')
                 ->live()
-                ->visible(fn(Get $get) => $get('requires_equipment'))
+                ->visible(fn (Get $get) => $get('requires_equipment'))
                 ->requiredWith('requires_equipment')
                 ->multiple()
                 ->relationship('equipment', 'registration', modifyQueryUsing: fn (Builder $query) => $query->where('company_id', $company_id))

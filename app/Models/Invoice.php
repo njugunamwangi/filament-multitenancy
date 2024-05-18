@@ -24,37 +24,37 @@ class Invoice extends Model
 
     protected function casts(): array
     {
-         return [
-             'subtotal' => Money::class,
-             'total' => Money::class,
-             'items' => 'json',
-             'status' => InvoiceStatus::class,
-         ];
+        return [
+            'subtotal' => Money::class,
+            'total' => Money::class,
+            'items' => 'json',
+            'status' => InvoiceStatus::class,
+        ];
     }
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function task(): BelongsTo
     {
-         return $this->belongsTo(Task::class);
+        return $this->belongsTo(Task::class);
     }
 
     public function currency(): BelongsTo
     {
-         return $this->belongsTo(Currency::class);
+        return $this->belongsTo(Currency::class);
     }
 
     public function customer(): BelongsTo
     {
-         return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function quote(): BelongsTo
     {
-         return $this->belongsTo(Quote::class);
+        return $this->belongsTo(Quote::class);
     }
 
     public function markPaid()
@@ -77,14 +77,14 @@ class Invoice extends Model
         ]);
 
         $bank = Account::query()
-                    ->where('company_id' ,$company->id)
-                    ->where('enabled', true)
-                    ->first();
+            ->where('company_id', $company->id)
+            ->where('enabled', true)
+            ->first();
 
         $seller = new Party([
-            'name'          => $company->name,
-            'phone'         => $company->phone,
-            'email'         => $company->email,
+            'name' => $company->name,
+            'phone' => $company->phone,
+            'email' => $company->email,
             'custom_fields' => [
                 'SWIFT' => $bank?->bic_swift_code,
                 'Bank' => $bank?->bank_name,

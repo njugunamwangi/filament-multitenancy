@@ -26,19 +26,19 @@ class ListTasks extends ListRecords
         $company_id = Filament::getTenant()->id;
 
         $tabs[] = Tab::make('All')
-                    ->badge(Task::where('company_id', $company_id)->count());
+            ->badge(Task::where('company_id', $company_id)->count());
 
         $tabs[] = Tab::make('Completed')
-                    ->badge(Task::where('company_id', $company_id)->where('is_completed', true)->count())
-                    ->modifyQueryUsing(function($query) {
-                        return $query->where('is_completed', true);
-                    });
+            ->badge(Task::where('company_id', $company_id)->where('is_completed', true)->count())
+            ->modifyQueryUsing(function ($query) {
+                return $query->where('is_completed', true);
+            });
 
         $tabs[] = Tab::make('Completed')
-                    ->badge(Task::where('company_id', $company_id)->where('is_completed', false)->count())
-                    ->modifyQueryUsing(function($query) {
-                        return $query->where('is_completed', false);
-                    });
+            ->badge(Task::where('company_id', $company_id)->where('is_completed', false)->count())
+            ->modifyQueryUsing(function ($query) {
+                return $query->where('is_completed', false);
+            });
 
         return $tabs;
     }

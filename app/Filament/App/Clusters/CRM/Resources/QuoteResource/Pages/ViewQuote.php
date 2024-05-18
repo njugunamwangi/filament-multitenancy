@@ -36,14 +36,14 @@ class ViewQuote extends ViewRecord
             ActionGroup::make([
                 Actions\EditAction::make(),
                 Action::make('invoice')
-                    ->hidden(fn($record) => $record->invoice)
+                    ->hidden(fn ($record) => $record->invoice)
                     ->color('success')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->modalIcon('heroicon-o-clipboard-document-check')
-                    ->modalDescription(fn($record) => 'Generate invoice for quote '. $record->serial)
+                    ->modalDescription(fn ($record) => 'Generate invoice for quote '.$record->serial)
                     ->modalSubmitActionLabel('Generate Invoice')
                     ->label('Generate Invoice')
-                    ->fillForm(fn($record): array => [
+                    ->fillForm(fn ($record): array => [
                         'items' => $record->items,
                         'taxes' => $record->taxes,
                         'notes' => $record->notes,
@@ -77,32 +77,32 @@ class ViewQuote extends ViewRecord
                                             ->addActionLabel('Add Item')
                                             ->columns(3)
                                             ->live()
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             })
                                             ->deleteAction(
-                                                fn(ActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                            )
+                                                fn (ActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                            ),
                                     ])->columnSpan(8),
                                 Group::make()
                                     ->schema([
                                         TextInput::make('subtotal')
                                             ->readOnly()
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                            ->afterStateHydrated(function(Get $get, Set $set) {
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('taxes')
                                             ->suffix('%')
                                             ->numeric()
                                             ->default(20)
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('total')
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                             ->readOnly(),
-                                    ])->columnSpan(4)
+                                    ])->columnSpan(4),
                             ])
                             ->columns(12),
                         RichEditor::make('notes')
@@ -110,9 +110,9 @@ class ViewQuote extends ViewRecord
                             ->required(),
                         ToggleButton::make('mail')
                             ->default(true)
-                            ->label('Send Email to Customer?')
+                            ->label('Send Email to Customer?'),
                     ])
-                    ->action(function($record, array $data) {
+                    ->action(function ($record, array $data) {
                         $company = Filament::getTenant();
                         $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
 
@@ -129,7 +129,7 @@ class ViewQuote extends ViewRecord
                             'serial' => $series.'-'.str_pad($serial_number, 5, '0', STR_PAD_LEFT),
                             'items' => $record->items,
                             'notes' => $data['notes'],
-                            'mail' => $data['mail']
+                            'mail' => $data['mail'],
                         ]);
 
                         if ($invoice->mail) {
@@ -142,11 +142,11 @@ class ViewQuote extends ViewRecord
                                 ->success()
                                 ->icon('heroicon-o-bolt')
                                 ->title('Invoice mailed')
-                                ->body('Invoice mailed to ' . $invoice->customer->name)
+                                ->body('Invoice mailed to '.$invoice->customer->name)
                                 ->send();
                         }
-                    })
-            ])
+                    }),
+            ]),
         ];
     }
 
@@ -156,7 +156,7 @@ class ViewQuote extends ViewRecord
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;

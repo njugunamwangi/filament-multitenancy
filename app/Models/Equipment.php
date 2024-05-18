@@ -19,22 +19,22 @@ class Equipment extends Model
 
     public function company(): BelongsTo
     {
-         return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function brand(): BelongsTo
     {
-         return $this->belongsTo(Brand::class);
+        return $this->belongsTo(Brand::class);
     }
 
     public function equipment(): BelongsToMany
     {
-         return $this->belongsToMany(Equipment::class);
+        return $this->belongsToMany(Equipment::class);
     }
 
     public static function getForm(): array
     {
-         return [
+        return [
             Select::make('brand_id')
                 ->relationship('brand', 'name')
                 ->createOptionForm(Brand::getForm())
@@ -42,6 +42,6 @@ class Equipment extends Model
             TextInput::make('registration')
                 ->required()
                 ->maxLength(255),
-         ];
+        ];
     }
 }

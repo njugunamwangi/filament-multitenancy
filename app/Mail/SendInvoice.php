@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Invoice;
 use Filament\Facades\Filament;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -18,6 +17,7 @@ class SendInvoice extends Mailable
     use Queueable, SerializesModels;
 
     private Invoice $invoice;
+
     /**
      * Create a new message instance.
      */
@@ -32,7 +32,7 @@ class SendInvoice extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Invoice ' . $this->invoice->serial,
+            subject: 'Invoice '.$this->invoice->serial,
         );
     }
 

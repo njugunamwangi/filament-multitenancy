@@ -74,32 +74,32 @@ class ViewCustomer extends ViewRecord
                                             ->addActionLabel('Add Item')
                                             ->columns(3)
                                             ->live()
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             })
                                             ->deleteAction(
-                                                fn(ActionsAction $action) => $action->after(fn(Get $get, Set $set) => self::updatedTotals($get, $set)),
-                                            )
+                                                fn (ActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                            ),
                                     ])->columnSpan(8),
                                 Group::make()
                                     ->schema([
                                         TextInput::make('subtotal')
                                             ->readOnly()
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                            ->afterStateHydrated(function(Get $get, Set $set) {
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('taxes')
                                             ->suffix('%')
                                             ->numeric()
                                             ->default(20)
-                                            ->afterStateUpdated(function(Get $get, Set $set) {
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('total')
-                                            ->prefix(fn(Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
                                             ->readOnly(),
-                                    ])->columnSpan(4)
+                                    ])->columnSpan(4),
                             ])
                             ->columns(12),
                         RichEditor::make('notes')
@@ -109,7 +109,7 @@ class ViewCustomer extends ViewRecord
                             ->label('Send Email?')
                             ->default('true'),
                     ])
-                    ->action(function($record, array $data) {
+                    ->action(function ($record, array $data) {
                         $company = Filament::getTenant();
 
                         $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
@@ -137,11 +137,11 @@ class ViewCustomer extends ViewRecord
                                 ->warning()
                                 ->icon('heroicon-o-bolt')
                                 ->title('Quote mailed')
-                                ->body('Quote mailed to ' . $quote->customer->name)
+                                ->body('Quote mailed to '.$quote->customer->name)
                                 ->send();
                         }
-                    })
-            ])
+                    }),
+            ]),
         ];
     }
 
@@ -151,7 +151,7 @@ class ViewCustomer extends ViewRecord
 
         $subtotal = 0;
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $aggregate = $item['quantity'] * $item['unit_price'];
 
             $subtotal += $aggregate;

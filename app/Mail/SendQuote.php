@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Quote;
 use Filament\Facades\Filament;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -33,7 +32,7 @@ class SendQuote extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Quote ' . $this->quote->serial,
+            subject: 'Quote '.$this->quote->serial,
         );
     }
 
