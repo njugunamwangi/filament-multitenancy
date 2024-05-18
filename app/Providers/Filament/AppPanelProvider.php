@@ -62,17 +62,17 @@ class AppPanelProvider extends PanelProvider
                 BreezyCore::make()
                     ->avatarUploadComponent(fn($fileUpload) => $fileUpload->disableLabel())
                     ->myProfile(
-                        shouldRegisterUserMenu: true, // Sets the 'account' link in the panel User Menu (default = true)
-                        shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
-                        hasAvatars: true, // Enables the avatar upload form component (default = false)
-                        slug: 'my-profile' // Sets the slug for the profile page (default = 'my-profile')
+                        shouldRegisterUserMenu: true,
+                        shouldRegisterNavigation: false,
+                        hasAvatars: true,
+                        slug: 'my-profile'
                     )
                     ->passwordUpdateRules(
-                        rules: [Password::default()->mixedCase()->uncompromised(3)], // you may pass an array of validation rules as well. (default = ['min:8'])
-                        requiresCurrentPassword: true, // when false, the user can update their password without entering their current password. (default = true)
+                        rules: [Password::default()->mixedCase()->uncompromised(3)],
+                        requiresCurrentPassword: true,
                         )
                     ->enableTwoFactorAuthentication(
-                        force: false, // force the user to enable 2FA before they can use the application (default = false)
+                        force: false,
                     )
             ])
             ->viteTheme('resources/css/filament/app/theme.css')
