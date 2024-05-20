@@ -12,6 +12,7 @@
         "bezhansalleh/filament-panel-switch": "^1.0",
         "brick/money": "^0.9.0",
         "filament/filament": "^3.2",
+        "filament/spark-billing-provider": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
         "jeffgreco13/filament-breezy": "^2.4",
         "laravel/framework": "^11.0",

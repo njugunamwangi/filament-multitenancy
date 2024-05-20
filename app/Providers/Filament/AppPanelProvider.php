@@ -6,6 +6,7 @@ use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
 use Awcodes\Curator\CuratorPlugin;
+use Filament\Billing\Providers\SparkBillingProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -50,6 +51,8 @@ class AppPanelProvider extends PanelProvider
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
+            // ->tenantBillingProvider(new SparkBillingProvider())
+            // ->requiresTenantSubscription()
             ->plugins([
                 FilamentFullCalendarPlugin::make(),
                 CuratorPlugin::make()
