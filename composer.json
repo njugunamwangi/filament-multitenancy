@@ -9,6 +9,7 @@
         "althinect/filament-spatie-roles-permissions": "^2.2",
         "andrewdwallo/filament-selectify": "^2.0",
         "awcodes/filament-curator": "^3.5",
+        "bezhansalleh/filament-panel-switch": "^1.0",
         "brick/money": "^0.9.0",
         "filament/filament": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
