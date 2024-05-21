@@ -53,6 +53,7 @@ class AppPanelProvider extends PanelProvider
             ->tenantProfile(EditCompanyProfile::class)
             // ->tenantBillingProvider(new SparkBillingProvider())
             // ->requiresTenantSubscription()
+            ->sidebarCollapsibleOnDesktop()
             ->plugins([
                 FilamentFullCalendarPlugin::make(),
                 CuratorPlugin::make()
