@@ -14,6 +14,8 @@ class IncompleteTasksTable extends BaseWidget
 {
     protected static ?int $sort = 4;
 
+    protected static ?string $heading = 'Incomplete Tasks';
+
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
