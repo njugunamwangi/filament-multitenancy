@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Money;
+use App\Enums\Template;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class Quote extends Model
             'subtotal' => Money::class,
             'total' => Money::class,
             'items' => 'json',
+            'template' => Template::class,
         ];
     }
 

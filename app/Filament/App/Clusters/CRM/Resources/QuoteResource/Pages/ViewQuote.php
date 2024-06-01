@@ -3,6 +3,7 @@
 namespace App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\Template;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource;
 use App\Mail\SendInvoice;
 use App\Models\Currency;
@@ -146,6 +147,25 @@ class ViewQuote extends ViewRecord
                                 ->send();
                         }
                     }),
+                Action::make('template')
+                    ->label('Change Template')
+                    ->color('warning')
+                    ->icon('heroicon-o-document-check')
+                    ->fillForm(fn($record) => [
+                        'template' => $record->template
+                    ])
+                    ->form([
+                        Select::make('template')
+                            ->options(Template::class)
+                            ->enum(Template::class)
+                            ->searchable()
+                            ->preload()
+                    ])
+                    ->action(function($record, array $data) {
+                        $record->template = $data['template'];
+
+                        $record->save();
+                    })
             ]),
         ];
     }

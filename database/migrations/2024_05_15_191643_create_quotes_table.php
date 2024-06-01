@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Template;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Customer;
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->json('items');
             $table->longText('notes');
             $table->boolean('mail');
+            $table->enum('template', Template::values())->default(Template::DEFAULT);
             $table->softDeletes();
             $table->timestamps();
         });

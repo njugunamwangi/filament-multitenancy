@@ -56,6 +56,7 @@ class QuotePDFController extends Controller
         $quotePdf = FacadesInvoice::make()
             ->buyer($customer)
             ->seller($seller)
+            ->template($quote->template->value)
             ->taxRate($quote->taxes)
             ->name('Quote')
             ->filename($quote->serial)
