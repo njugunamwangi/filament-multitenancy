@@ -79,30 +79,35 @@ class ViewQuote extends ViewRecord
                                             ->columns(3)
                                             ->live()
                                             ->afterStateUpdated(function (Get $get, Set $set) {
-                                                self::updatedTotals($get, $set);
+                                                self::updateTotals($get, $set);
                                             })
                                             ->deleteAction(
-                                                fn (ActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                                fn (ActionsAction $action) => $action->after(fn (Get $get, Set $set) => self::updateTotals($get, $set)),
                                             ),
                                     ])->columnSpan(8),
                                 Group::make()
                                     ->schema([
                                         TextInput::make('subtotal')
+                                            ->numeric()
                                             ->readOnly()
-                                            ->prefix(fn ($record) => $record->currency->abbr)
+                                            ->live()
+                                            ->prefix(fn (Get $get) => Currency::where('id', $get('currency_id'))->first()->abbr ?? 'CUR')
                                             ->afterStateHydrated(function (Get $get, Set $set) {
-                                                self::updatedTotals($get, $set);
+                                                self::updateTotals($get, $set);
                                             }),
                                         TextInput::make('taxes')
                                             ->suffix('%')
+                                            ->required()
                                             ->numeric()
-                                            ->default(20)
+                                            ->default(16)
+                                            ->live(true)
                                             ->afterStateUpdated(function (Get $get, Set $set) {
-                                                self::updatedTotals($get, $set);
+                                                self::updateTotals($get, $set);
                                             }),
                                         TextInput::make('total')
-                                            ->prefix(fn ($record) => $record->currency->abbr)
-                                            ->readOnly(),
+                                            ->numeric()
+                                            ->readOnly()
+                                            ->prefix(fn (Get $get) => Currency::where('id', $get('currency_id'))->first()->abbr ?? 'CUR'),
                                     ])->columnSpan(4),
                             ])
                             ->columns(12),
@@ -123,9 +128,9 @@ class ViewQuote extends ViewRecord
                             'currency_id' => $record->currency->id,
                             'company_id' => $company->id,
                             'status' => $data['status'],
-                            'subtotal' => str_replace(',', '', $data['subtotal']),
+                            'subtotal' => $data['subtotal'],
                             'taxes' => $record->taxes,
-                            'total' => str_replace(',', '', $data['total']),
+                            'total' => $data['total'],
                             'serial_number' => $serial_number = (Invoice::query()->where('company_id', $company->id)->max('serial_number') ?? 0) + 1,
                             'serial' => $series.'-'.str_pad($serial_number, 5, '0', STR_PAD_LEFT),
                             'items' => $record->items,
@@ -141,36 +146,17 @@ class ViewQuote extends ViewRecord
 
                             Notification::make()
                                 ->success()
-                                ->icon('heroicon-o-bolt')
+                                ->icon('heroicon-o-envelope')
                                 ->title('Invoice mailed')
                                 ->body('Invoice mailed to '.$invoice->customer->name)
                                 ->send();
                         }
                     }),
-                // Action::make('template')
-                //     ->label('Change Template')
-                //     ->color('warning')
-                //     ->icon('heroicon-o-document-check')
-                //     ->fillForm(fn($record) => [
-                //         'template' => $record->template
-                //     ])
-                //     ->form([
-                //         Select::make('template')
-                //             ->options(Template::class)
-                //             ->enum(Template::class)
-                //             ->searchable()
-                //             ->preload()
-                //     ])
-                //     ->action(function($record, array $data) {
-                //         $record->template = $data['template'];
-
-                //         $record->save();
-                //     })
             ]),
         ];
     }
 
-    public static function updatedTotals(Get $get, Set $set): void
+    public static function updateTotals(Get $get, Set $set): void
     {
         $items = collect($get('items'));
 
@@ -182,7 +168,9 @@ class ViewQuote extends ViewRecord
             $subtotal += $aggregate;
         }
 
-        $set('subtotal', number_format($subtotal));
-        $set('total', number_format($subtotal + ($subtotal * ($get('taxes') / 100))));
+        $currency = Currency::where('id', $get('currency_id'))->first();
+
+        $set('subtotal', number_format($subtotal, $currency->precision ?? 0, '.', ''));
+        $set('total', number_format($subtotal + ($subtotal * ($get('taxes') / 100)), $currency->precision ?? 0, '.', ''));
     }
 }

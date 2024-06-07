@@ -16,7 +16,7 @@ class Money implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        return MoneyMoney::of($value, $model->currency->abbr)->formatTo($model->currency->locale);
+        return MoneyMoney::of($value, $model->currency->abbr);
     }
 
     /**
@@ -30,6 +30,6 @@ class Money implements CastsAttributes
             return $value;
         }
 
-        return $value->getAmount()->toScale(0, RoundingMode::UP)->toInt();
+        return $value->getAmount()->toScale(0, RoundingMode::UP);
     }
 }

@@ -22,9 +22,9 @@ return new class extends Migration
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Currency::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('subtotal');
+            $table->unsignedInteger('subtotal');
             $table->unsignedInteger('taxes');
-            $table->unsignedBigInteger('total');
+            $table->unsignedInteger('total');
             $table->integer('serial_number')->nullable();
             $table->string('serial')->nullable();
             $table->json('items');

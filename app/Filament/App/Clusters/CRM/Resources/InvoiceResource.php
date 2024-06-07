@@ -111,30 +111,35 @@ class InvoiceResource extends Resource
                                     ->columns(3)
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set) {
-                                        self::updatedTotals($get, $set);
+                                        self::updateTotals($get, $set);
                                     })
                                     ->deleteAction(
-                                        fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updatedTotals($get, $set)),
+                                        fn (Action $action) => $action->after(fn (Get $get, Set $set) => self::updateTotals($get, $set)),
                                     ),
                             ])->columnSpan(8),
                         Group::make()
                             ->schema([
-                                TextInput::make('subtotal')
-                                    ->readOnly()
-                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                    ->afterStateHydrated(function (Get $get, Set $set) {
-                                        self::updatedTotals($get, $set);
-                                    }),
-                                TextInput::make('taxes')
-                                    ->suffix('%')
+                                Forms\Components\TextInput::make('subtotal')
                                     ->numeric()
-                                    ->default(20)
-                                    ->afterStateUpdated(function (Get $get, Set $set) {
-                                        self::updatedTotals($get, $set);
+                                    ->readOnly()
+                                    ->live()
+                                    ->prefix(fn (Get $get) => Currency::where('id', $get('currency_id'))->first()->abbr ?? 'CUR')
+                                    ->afterStateHydrated(function (Get $get, Set $set) {
+                                        self::updateTotals($get, $set);
                                     }),
-                                TextInput::make('total')
-                                    ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
-                                    ->readOnly(),
+                                Forms\Components\TextInput::make('taxes')
+                                    ->suffix('%')
+                                    ->required()
+                                    ->numeric()
+                                    ->default(16)
+                                    ->live(true)
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        self::updateTotals($get, $set);
+                                    }),
+                                Forms\Components\TextInput::make('total')
+                                    ->numeric()
+                                    ->readOnly()
+                                    ->prefix(fn (Get $get) => Currency::where('id', $get('currency_id'))->first()->abbr ?? 'CUR'),
                             ])->columnSpan(4),
                     ])
                     ->columns(12),
@@ -147,7 +152,7 @@ class InvoiceResource extends Resource
             ]);
     }
 
-    public static function updatedTotals(Get $get, Set $set): void
+    public static function updateTotals(Get $get, Set $set): void
     {
         $items = collect($get('items'));
 
@@ -159,8 +164,10 @@ class InvoiceResource extends Resource
             $subtotal += $aggregate;
         }
 
-        $set('subtotal', number_format($subtotal));
-        $set('total', number_format($subtotal + ($subtotal * ($get('taxes') / 100))));
+        $currency = Currency::where('id', $get('currency_id'))->first();
+
+        $set('subtotal', number_format($subtotal, $currency->precision ?? 0, '.', ''));
+        $set('total', number_format($subtotal + ($subtotal * ($get('taxes') / 100)), $currency->precision ?? 0, '.', ''));
     }
 
     public static function table(Table $table): Table

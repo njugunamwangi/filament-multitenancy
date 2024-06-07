@@ -21,8 +21,6 @@ class CreateInvoice extends CreateRecord
         $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
 
         $data['company_id'] = $company->id;
-        $data['subtotal'] = str_replace(',', '', $data['subtotal']);
-        $data['total'] = str_replace(',', '', $data['total']);
         $data['serial_number'] = (Invoice::query()->where('company_id', $company->id)->max('serial_number') ?? 0) + 1;
         $data['serial'] = $series.'-'.str_pad($data['serial_number'], 5, '0', STR_PAD_LEFT);
 

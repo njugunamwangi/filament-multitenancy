@@ -21,8 +21,6 @@ class CreateQuote extends CreateRecord
     {
         $company = Filament::getTenant();
         $data['company_id'] = $company->id;
-        $data['subtotal'] = str_replace(',', '', $data['subtotal']);
-        $data['total'] = str_replace(',', '', $data['total']);
         $data['serial_number'] = (Quote::query()->where('company_id', $company->id)->max('serial_number') ?? 0) + 1;
         $series = (new Initials)->name($company->name)->length(str_word_count($company->name))->generate();
         $data['serial'] = $series.'-'.str_pad($data['serial_number'], 5, '0', STR_PAD_LEFT);
