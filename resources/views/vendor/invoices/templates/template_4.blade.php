@@ -6,15 +6,18 @@
     <meta charset="UTF-8">
 
     <!-- External CSS libraries -->
-    <link type="text/css" rel="stylesheet" href="{{ public_path('css/bootstrap.min.css')}}">
-    <link type="text/css" rel="stylesheet" href="{{ public_path('fonts/font-awesome/css/font-awesome.min.css')}}">
+    <link type="text/css" rel="stylesheet" href="invoices/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="invoices/fonts/font-awesome/css/font-awesome.min.css">
+
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" href="invoices/img/favicon.ico" type="image/x-icon" >
 
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Custom Stylesheet -->
-    <link type="text/css" rel="stylesheet" href="{{ public_path('css/style.css')}}">
+    <link type="text/css" rel="stylesheet" href="invoices/css/style.css">
 </head>
 <body>
 
@@ -28,7 +31,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="logo">
-                                    <img src="{{ public_path('img/logos/logo.png')}}" alt="logo">
+                                    <img src="invoices/img/logos/logo.png" alt="logo">
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -187,23 +190,15 @@
                     </div>
 
                 </div>
-                <div class="invoice-btn-section clearfix d-print-none">
-                    <a href="javascript:window.print()" class="btn btn-lg btn-print">
-                        <i class="fa fa-print"></i> Print Invoice
-                    </a>
-                    <a id="invoice_download_btn" class="btn btn-lg btn-download btn-theme">
-                        <i class="fa fa-download"></i> Download Invoice
-                    </a>
-                </div>
             </div>
         </div>
     </div>
 </div>
 <!-- Invoice 4 end -->
 
-<script src="{{ public_path('js/jquery.min.js')}}"></script>
-<script src="{{ public_path('js/jspdf.min.js')}}"></script>
-<script src="{{ public_path('js/html2canvas.js')}}"></script>
-<script src="{{ public_path('js/app.js')}}"></script>
+<script src="invoices/js/jquery.min.js"></script>
+<script src="invoices/js/jspdf.min.js"></script>
+<script src="invoices/js/html2canvas.js"></script>
+<script src="invoices/js/app.js"></script>
 </body>
 </html>

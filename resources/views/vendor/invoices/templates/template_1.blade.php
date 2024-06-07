@@ -6,15 +6,15 @@
     <meta charset="UTF-8">
 
     <!-- External CSS libraries -->
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="invoices/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="invoices/fonts/font-awesome/css/font-awesome.min.css">
 
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900">
 
     <!-- Custom Stylesheet -->
-    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <link type="text/css" rel="stylesheet" href="invoices/css/style.css">
 </head>
 <body class="w-full">
 
@@ -216,9 +216,9 @@
 </div>
 <!-- Invoice 1 end -->
 
-<script src="js/jquery.min.js"></script>
-<script src="js/jspdf.min.js"></script>
-<script src="js/html2canvas.js"></script>
-<script src="js/app.js"></script>
+<script src="invoices/js/jquery.min.js"></script>
+<script src="invoices/js/jspdf.min.js"></script>
+<script src="invoices/js/html2canvas.js"></script>
+<script src="invoices/js/app.js"></script>
 </body>
 </html>

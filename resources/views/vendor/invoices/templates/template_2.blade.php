@@ -6,18 +6,18 @@
     <meta charset="UTF-8">
 
     <!-- External CSS libraries -->
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="invoices/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="invoices/fonts/font-awesome/css/font-awesome.min.css">
 
     <!-- Favicon icon -->
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" >
+    <link rel="shortcut icon" href="invoices/img/favicon.ico" type="image/x-icon" >
 
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900">
 
     <!-- Custom Stylesheet -->
-    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <link type="text/css" rel="stylesheet" href="invoices/css/style.css">
 </head>
 <body>
 
@@ -34,7 +34,7 @@
                                     <div class="invoice-logo">
                                         <!-- logo started -->
                                         <div class="logo">
-                                            <img src="img/logos/logo.png" alt="logo">
+                                            <img src="invoices/img/logos/logo.png" alt="logo">
                                         </div>
                                         <!-- logo ended -->
                                     </div>
@@ -194,14 +194,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="invoice-btn-section clearfix d-print-none">
-                        <a href="javascript:window.print()" class="btn btn-lg btn-print">
-                            <i class="fa fa-print"></i> Print Invoice
-                        </a>
-                        <a id="invoice_download_btn" class="btn btn-lg btn-download btn-theme">
-                            <i class="fa fa-download"></i> Download Invoice
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -209,9 +201,9 @@
 </div>
 <!-- Invoice 2 end -->
 
-<script src="js/jquery.min.js"></script>
-<script src="js/jspdf.min.js"></script>
-<script src="js/html2canvas.js"></script>
-<script src="js/app.js"></script>
+<script src="invoices/js/jquery.min.js"></script>
+<script src="invoices/js/jspdf.min.js"></script>
+<script src="invoices/js/html2canvas.js"></script>
+<script src="invoices/js/app.js"></script>
 </body>
 </html>
