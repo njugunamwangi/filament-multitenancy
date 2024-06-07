@@ -8,6 +8,7 @@ use App\Filament\App\Clusters\CRM\Resources\InvoiceResource\Pages;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -24,6 +25,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Actions\Action as NotificationsActionsAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -222,8 +224,13 @@ class InvoiceResource extends Resource
                                 ->title('Invoice Paid')
                                 ->body('Invoice '.$record->serial.' was marked paid')
                                 ->success()
-                                ->icon('heroicon-o-check-badge')
-                                ->send();
+                                ->icon('heroicon-o-banknotes')
+                                ->actions([
+                                    NotificationsActionsAction::make('read')
+                                        ->label('Mark as read')
+                                        ->markAsRead()
+                                ])
+                                ->sendToDatabase(User::find(Filament::getTenant()->user_id));
                         }),
                 ]),
             ])

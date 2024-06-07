@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Quote;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -26,6 +27,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Actions\Action as NotificationsActionsAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\MaxWidth;
@@ -305,16 +307,23 @@ class QuoteResource extends Resource
 
                             if ($invoice->mail) {
 
+                                $company = Filament::getTenant();
+
                                 $invoice->savePdf();
 
                                 Mail::to($invoice->customer->email)->send(new SendInvoice($invoice));
 
                                 Notification::make()
                                     ->success()
-                                    ->icon('heroicon-o-bolt')
+                                    ->icon('heroicon-o-envelope')
                                     ->title('Invoice mailed')
-                                    ->body('Invoice mailed to '.$invoice->customer->name)
-                                    ->send();
+                                    ->body('Invoice for ' . $company->name . ' mailed to '.$invoice->customer->name)
+                                    ->actions([
+                                        NotificationsActionsAction::make('read')
+                                            ->label('Mark as read')
+                                            ->markAsRead()
+                                    ])
+                                    ->sendToDatabase(User::find($company->user_id));
                             }
                         }),
                 ]),

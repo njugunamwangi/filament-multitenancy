@@ -5,7 +5,9 @@ namespace App\Filament\App\Clusters\CRM\Resources\QuoteResource\Pages;
 use App\Filament\App\Clusters\CRM\Resources\QuoteResource;
 use App\Mail\SendQuote;
 use App\Models\Quote;
+use App\Models\User;
 use Filament\Facades\Filament;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Mail;
@@ -34,16 +36,25 @@ class CreateQuote extends CreateRecord
 
         if ($quote->mail) {
 
+            $company = Filament::getTenant();
+
+            $user = User::find($company->user_id);
+
             $quote->savePdf();
 
             Mail::to($quote->customer->email)->send(new SendQuote($quote));
 
             Notification::make()
                 ->warning()
-                ->icon('heroicon-o-bolt')
+                ->icon('heroicon-o-envelope')
                 ->title('Quote mailed')
-                ->body('Quote mailed to '.$quote->customer->name)
-                ->send();
+                ->body('Quote for ' . $company->name . ' mailed to '.$quote->customer->name)
+                ->actions([
+                    Action::make('read')
+                        ->label('Mark as read')
+                        ->markAsRead()
+                ])
+                ->sendToDatabase($user);
         }
     }
 
