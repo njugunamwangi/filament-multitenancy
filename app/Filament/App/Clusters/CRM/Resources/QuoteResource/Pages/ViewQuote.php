@@ -89,7 +89,7 @@ class ViewQuote extends ViewRecord
                                     ->schema([
                                         TextInput::make('subtotal')
                                             ->readOnly()
-                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->prefix(fn ($record) => $record->currency->abbr)
                                             ->afterStateHydrated(function (Get $get, Set $set) {
                                                 self::updatedTotals($get, $set);
                                             }),
@@ -101,7 +101,7 @@ class ViewQuote extends ViewRecord
                                                 self::updatedTotals($get, $set);
                                             }),
                                         TextInput::make('total')
-                                            ->prefix(fn (Get $get) => Currency::find($get('currency_id'))->abbr ?? 'CUR')
+                                            ->prefix(fn ($record) => $record->currency->abbr)
                                             ->readOnly(),
                                     ])->columnSpan(4),
                             ])
@@ -147,25 +147,25 @@ class ViewQuote extends ViewRecord
                                 ->send();
                         }
                     }),
-                Action::make('template')
-                    ->label('Change Template')
-                    ->color('warning')
-                    ->icon('heroicon-o-document-check')
-                    ->fillForm(fn($record) => [
-                        'template' => $record->template
-                    ])
-                    ->form([
-                        Select::make('template')
-                            ->options(Template::class)
-                            ->enum(Template::class)
-                            ->searchable()
-                            ->preload()
-                    ])
-                    ->action(function($record, array $data) {
-                        $record->template = $data['template'];
+                // Action::make('template')
+                //     ->label('Change Template')
+                //     ->color('warning')
+                //     ->icon('heroicon-o-document-check')
+                //     ->fillForm(fn($record) => [
+                //         'template' => $record->template
+                //     ])
+                //     ->form([
+                //         Select::make('template')
+                //             ->options(Template::class)
+                //             ->enum(Template::class)
+                //             ->searchable()
+                //             ->preload()
+                //     ])
+                //     ->action(function($record, array $data) {
+                //         $record->template = $data['template'];
 
-                        $record->save();
-                    })
+                //         $record->save();
+                //     })
             ]),
         ];
     }
