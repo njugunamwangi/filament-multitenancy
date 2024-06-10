@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "althinect/filament-spatie-roles-permissions": "^2.2",
+        "andreia/filament-stripe-payment-link": "^1.0",
         "andrewdwallo/filament-selectify": "^2.0",
         "awcodes/filament-curator": "^3.5",
         "bezhansalleh/filament-panel-switch": "^1.0",

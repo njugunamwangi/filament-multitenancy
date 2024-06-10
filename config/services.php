@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'stripe' => [
+        'payment-link-key' => env('STRIPE_PAYMENT_LINK_KEY')
+    ],
+
 ];
