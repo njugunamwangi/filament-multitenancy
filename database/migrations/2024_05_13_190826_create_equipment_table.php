@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('equipment', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Company::class)->nullable()->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Brand::class)->constrained()->cascadeOnDelete();
-            $table->string('registration');
+            $table->string('registration')->unique();
+            $table->integer('price')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
