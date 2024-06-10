@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -92,7 +93,11 @@ class Task extends Model
                     $data['company_id'] = Filament::getTenant()->id;
 
                     return Equipment::create($data)->getKey();
-                }),
+                })
+                ->hintAction(
+                    Action::make('select_all')
+                        ->action(fn(Select $component) =>$component->state(array_keys($component->getOptions())))
+                ),
         ];
     }
 }
