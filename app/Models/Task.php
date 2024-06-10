@@ -94,9 +94,17 @@ class Task extends Model
 
                     return Equipment::create($data)->getKey();
                 })
-                ->hintAction(
+                ->hintActions([
                     Action::make('select_all')
-                        ->action(fn(Select $component) =>$component->state(array_keys($component->getOptions())))
+                        ->visible(fn(Select $component) => count($component->getState()) < count($component->getOptions()))
+                        ->icon('heroicon-o-check')
+                        ->action(fn(Select $component) => $component->state(array_keys($component->getOptions()))),
+                    Action::make('remove_all')
+                        ->visible(fn(Select $component) => $component->getState() !== [])
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->action(fn(Select $component) => $component->state([]))
+                    ]
                 ),
         ];
     }
