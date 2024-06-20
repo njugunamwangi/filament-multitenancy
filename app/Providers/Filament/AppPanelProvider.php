@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\App\Pages\Auth\Register;
 use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
@@ -36,7 +37,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->domain(env('APP_SUBDOMAIN'))
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->passwordReset()
             ->colors([
                 'primary' => Color::Teal,
