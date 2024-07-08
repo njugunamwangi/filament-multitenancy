@@ -14,4 +14,6 @@ class Role extends ModelsRole
     public const OWNER = 2;
 
     public const MANAGER = 3;
+
+    public const STAFF = 3;
 }

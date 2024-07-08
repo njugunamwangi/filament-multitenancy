@@ -69,6 +69,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenant
 
         } elseif ($panel->getId() == 'app') {
 
+            return $this->hasRole([
+                Role::ADMIN,
+                Role::OWNER
+            ]);
+
+        } elseif ($panel->getId() == 'staff') {
+
             return true;
 
         }
