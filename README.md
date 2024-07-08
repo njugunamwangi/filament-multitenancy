@@ -41,6 +41,11 @@ npm install
 php artisan key:generate
 ```
 
+- Don't forget to run the application
+```bash
+npm run dev
+```
+
 ## Routes
 
 - [Admin Panel](https://admin.filament-multitenancy.test.com).
