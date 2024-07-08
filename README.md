@@ -2,7 +2,7 @@
 
 A simple multi tenancy project built with Laravel & FilamentPHP
 
-# Tech Stack
+## Tech Stack
 
 - [Laravel](https://laravel.com).
 - [Livewire](https://livewire.laravel.com).
@@ -41,7 +41,7 @@ npm install
 php artisan key:generate
 ```
 
-# Routes
+## Routes
 
 - [Admin Panel](https://admin.filament-multitenancy.test.com).
 - [App Panel](https://app.filament-multitenancy.test.com).
