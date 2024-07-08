@@ -16,7 +16,7 @@ class OwnerSeeder extends Seeder
     {
         $user = User::create([
             'name' => $owner = 'Owner 1',
-            'email' => Str::slug($owner).'@drones.test',
+            'email' => Str::slug(str_replace(' ', '',$owner)).'@filament.test',
             'password' => bcrypt('Password'),
             'email_verified_at' => now(),
         ]);
