@@ -48,8 +48,8 @@ npm run dev
 
 ## Routes
 
-- [Admin Panel](https://admin.filament-multitenancy.test.com).
-- [App Panel](https://app.filament-multitenancy.test.com).
+- [Admin Panel](https://admin.filament-multitenancy.test).
+- [App Panel](https://app.filament-multitenancy.test).
 
 ## Prerequisites
 
